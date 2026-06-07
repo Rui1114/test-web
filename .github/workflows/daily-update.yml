@@ -37,10 +37,23 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add public/data/
-          # 只有数据有变化时才提交（触发 Vercel 重新部署）
           if git diff --cached --quiet; then
             echo "数据无变化，跳过提交"
           else
             git commit -m "每日数据更新 $(date '+%Y-%m-%d %H:%M') UTC"
             git push
           fi
+
+      - name: 安装腾讯云 CLI 工具
+        run: pip install coscmd
+
+      - name: 同步到腾讯云COS（香港）
+        env:
+          COS_SECRET_ID: ${{ secrets.COS_SECRET_ID }}
+          COS_SECRET_KEY: ${{ secrets.COS_SECRET_KEY }}
+          COS_BUCKET: ${{ secrets.COS_BUCKET }}
+        run: |
+          coscmd config -a "$COS_SECRET_ID" -s "$COS_SECRET_KEY" \
+            -b "$COS_BUCKET" -r ap-hongkong
+          coscmd upload -rs --delete public/ /
+          echo "✅ 腾讯云COS同步完成"
