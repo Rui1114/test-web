@@ -1,0 +1,133 @@
+{
+  "monthly": [
+    {
+      "id": "MONTHLY-2026-05",
+      "period": "月度",
+      "year": 2026,
+      "month": 5,
+      "label": "2026年5月",
+      "national": {
+        "newSpecialBond": 14000,
+        "progressRate": 33.2,
+        "specialNewBond": 1630,
+        "specialGrowthRate": 39.0
+      },
+      "regionalSummary": [
+        {
+          "region": "北部区域",
+          "provinces": ["河北", "辽宁", "吉林", "内蒙古"],
+          "totalIssued": 5193,
+          "keyPoints": "河北2261亿，内蒙古1230亿，吉林1186亿；吉林退出高风险名单，内蒙古安排154.5亿清欠资金",
+          "nextMonthPlan": "河北666亿（新增610亿最高），内蒙古200-300亿，辽宁100-200亿",
+          "aiAnalysis": ""
+        },
+        {
+          "region": "西南区域",
+          "provinces": ["四川", "云南", "重庆"],
+          "totalIssued": 5908,
+          "keyPoints": "四川2500亿（一季度置换债全国第一），重庆1665亿，云南1743亿（5月两批置换债577亿）",
+          "nextMonthPlan": "四川355.51亿（6月化债力度最大），重庆100亿（全部再融资），云南200-400亿",
+          "aiAnalysis": ""
+        },
+        {
+          "region": "华南区域",
+          "provinces": ["广东", "福建", "江西", "广西", "湖南", "湖北"],
+          "totalIssued": 9344,
+          "keyPoints": "广东2640亿（新增专项债占比最高），湖北1850亿（自审自发扩围），湖南清欠列为督查激励",
+          "nextMonthPlan": "广东654亿（新增417亿全国最高），广西245亿（单月最高），湖南200-400亿",
+          "aiAnalysis": ""
+        },
+        {
+          "region": "中部区域",
+          "provinces": ["河南", "山西", "陕西"],
+          "totalIssued": 3547,
+          "keyPoints": "河南1457亿（清欠台账171个项目），陕西省委部署加力清欠，山西840亿",
+          "nextMonthPlan": "陕西200-300亿（加速）、河南200-400亿、山西230亿（二季度最高）",
+          "aiAnalysis": ""
+        },
+        {
+          "region": "东部区域",
+          "provinces": ["山东"],
+          "totalIssued": 2011,
+          "keyPoints": "山东2011亿，新增债1206亿（化债资金占比偏低），6月437亿（新增220亿）",
+          "nextMonthPlan": "6月437.56亿元，新增专项债220亿",
+          "aiAnalysis": ""
+        },
+        {
+          "region": "贵州区域",
+          "provinces": ["贵州"],
+          "totalIssued": 1343,
+          "keyPoints": "贵州全国化债重点省份，4月单月置换债503亿；6月新增200亿创单月最高",
+          "nextMonthPlan": "6月230亿（新增200亿，创年内单月最高）",
+          "aiAnalysis": ""
+        }
+      ]
+    }
+  ],
+  "quarterly": [
+    {
+      "id": "Q2-2026",
+      "period": "季度",
+      "year": 2026,
+      "quarter": 2,
+      "label": "2026年第二季度",
+      "description": "二季度为全国专项债发行关键窗口期，6月为集中发行最高峰",
+      "national": {
+        "plannedAmount": 25000,
+        "issuedAmount": 14000,
+        "progressRate": 56,
+        "keyPolicy": "国家发改委要求中央预算内投资和超长期国债6月底前基本下达完毕"
+      },
+      "provincialPlans": [
+        {"province": "河北", "jun2026": 666.34, "note": "新增610亿，年内单月最高"},
+        {"province": "山东", "jun2026": 437.56, "note": "新增220亿"},
+        {"province": "广东", "jun2026": 654.27, "note": "新增417.46亿，全国单月最高"},
+        {"province": "四川", "jun2026": 355.51, "note": "再融资345.61亿，占97.2%"},
+        {"province": "广西", "jun2026": 245, "note": "全部新增，年内单月最高"},
+        {"province": "湖北", "q2Total": 612, "note": "二季度计划"},
+        {"province": "重庆", "jun2026": 100.38, "note": "全部再融资"},
+        {"province": "贵州", "jun2026": 230, "note": "新增200亿，年内最高"},
+        {"province": "云南", "jun2026Estimate": "200-400", "note": "预估"},
+        {"province": "内蒙古", "jun2026Estimate": "200-300", "note": "预估"},
+        {"province": "河南", "jun2026Estimate": "200-400", "note": "预估"},
+        {"province": "辽宁", "jun2026Estimate": "100-200", "note": "预估"}
+      ]
+    }
+  ],
+  "predictions": {
+    "national2026": {
+      "newSpecialBondTarget": 44000,
+      "progressAsOf": "2026-05-14",
+      "completionRate": 33.2,
+      "fullYearEstimate": "4.4万亿元将基本完成，二季度为关键窗口",
+      "specialBondTrend": "特殊新增专项债同比增长39%，化债力度持续加快"
+    },
+    "byProvince": {
+      "河北": {
+        "strategy": "化债与新增建设并行型",
+        "h2Focus": "持续跟进补充财力类资金分配，自审自发扩围后效率提升",
+        "confidence": "高"
+      },
+      "内蒙古": {
+        "strategy": "再融资/化债主导型",
+        "h2Focus": "154.5亿清欠专项资金分配方案落地，新增专项债持续扩容",
+        "confidence": "高"
+      },
+      "四川": {
+        "strategy": "化债与新增建设并行型",
+        "h2Focus": "二季度化债力度全国最大，省级5%配套优势明显",
+        "confidence": "高"
+      },
+      "广东": {
+        "strategy": "自审自发先行试点",
+        "h2Focus": "特殊专项债比例将从7.5%提升至全国均值15%以上",
+        "confidence": "中"
+      },
+      "贵州": {
+        "strategy": "再融资/化债主导型（重点关注省份）",
+        "h2Focus": "新增专项债额度提升，化债资金向清欠倾斜",
+        "confidence": "中"
+      }
+    }
+  }
+}

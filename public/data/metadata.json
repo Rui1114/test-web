@@ -1,0 +1,14 @@
+{
+  "lastUpdated": "2026-06-07",
+  "lastUpdateTime": "2026-06-07T09:03:52.102244",
+  "dataRangeStart": "2024-12-01",
+  "dataRangeEnd": "2026-06-07",
+  "dataRangeStartLabel": "2024年12月01日",
+  "dataRangeEndLabel": "2026年06月07日",
+  "retentionMonths": 18,
+  "totalBonds": 34,
+  "totalPolicies": 18,
+  "version": "2.0.0",
+  "latestAIAnalysis": null,
+  "latestAIAnalysisTime": null
+}

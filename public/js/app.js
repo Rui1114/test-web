@@ -132,7 +132,8 @@ function switchTab(tabId, btn) {
 async function fetchData() {
   try {
     const [metaRes, bondsRes, policiesRes, summariesRes] = await Promise.all([
-      fetch('/api/metadata'), fetch('/api/bonds'), fetch('/api/policies'), fetch('/api/summaries')
+      fetch('/data/metadata.json'), fetch('/data/bonds.json'),
+      fetch('/data/policies.json'), fetch('/data/summaries.json')
     ]);
     state.metadata = await metaRes.json();
     const bondsData = await bondsRes.json();
@@ -141,7 +142,6 @@ async function fetchData() {
     state.summaries = await summariesRes.json();
   } catch (e) {
     console.error('Failed to fetch data:', e);
-    // Use fallback empty state
   }
 }
 
