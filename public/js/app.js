@@ -414,6 +414,138 @@ function getBondTypeTag(type) {
   return 'tag-blue';
 }
 
+// ─── All Bonds Table (过去1.5年各省发债详情) ─────────────────────
+function populateAllBondFilters() {
+  const regionSel = document.getElementById('allBondRegionFilter');
+  if (regionSel && regionSel.options.length === 1) {
+    Object.keys(REGIONS).forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r; opt.textContent = r;
+      regionSel.appendChild(opt);
+    });
+  }
+  // Province quick-select chips
+  const chips = document.getElementById('allBondProvinceChips');
+  if (chips && !chips.children.length) {
+    const provinces = [...new Set(state.bonds.map(b => b.province))].sort();
+    const allBtn = document.createElement('button');
+    allBtn.className = 'province-chip active';
+    allBtn.textContent = '全部省份';
+    allBtn.onclick = () => { selectAllBondProvince(null, allBtn); };
+    chips.appendChild(allBtn);
+    provinces.forEach(p => {
+      const btn = document.createElement('button');
+      btn.className = 'province-chip';
+      btn.textContent = p;
+      btn.onclick = () => { selectAllBondProvince(p, btn); };
+      chips.appendChild(btn);
+    });
+  }
+  // Populate province dropdown
+  onAllBondRegionChange();
+}
+
+function selectAllBondProvince(province, btn) {
+  const sel = document.getElementById('allBondProvinceFilter');
+  if (sel) sel.value = province || '';
+  document.querySelectorAll('#allBondProvinceChips .province-chip').forEach(c => c.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderAllBondsTable();
+}
+
+function onAllBondRegionChange() {
+  const region = document.getElementById('allBondRegionFilter')?.value;
+  const sel = document.getElementById('allBondProvinceFilter');
+  if (!sel) return;
+  while (sel.options.length > 1) sel.remove(1);
+  const provinces = region && REGIONS[region]
+    ? REGIONS[region]
+    : [...new Set(state.bonds.map(b => b.province))].sort();
+  provinces.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p; opt.textContent = p;
+    sel.appendChild(opt);
+  });
+  renderAllBondsTable();
+}
+
+function resetAllBondFilters() {
+  ['allBondRegionFilter', 'allBondProvinceFilter', 'allBondTypeFilter'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const cb = document.getElementById('allBondSpecialFilter');
+  if (cb) cb.checked = false;
+  document.querySelectorAll('#allBondProvinceChips .province-chip').forEach(c => c.classList.remove('active'));
+  const first = document.querySelector('#allBondProvinceChips .province-chip');
+  if (first) first.classList.add('active');
+  onAllBondRegionChange();
+}
+
+function renderAllBondsTable() {
+  const tbody = document.getElementById('allBondTableBody');
+  if (!tbody) return;
+
+  const region   = document.getElementById('allBondRegionFilter')?.value;
+  const province = document.getElementById('allBondProvinceFilter')?.value;
+  const type     = document.getElementById('allBondTypeFilter')?.value;
+  const special  = document.getElementById('allBondSpecialFilter')?.checked;
+
+  let bonds = [...state.bonds];
+  if (region)   bonds = bonds.filter(b => b.region === region);
+  if (province) bonds = bonds.filter(b => b.province === province);
+  if (type)     bonds = bonds.filter(b => b.type === type);
+  if (special)  bonds = bonds.filter(b => b.isSpecial);
+
+  bonds.sort((a, b) => {
+    if (a.province !== b.province) return a.province.localeCompare(b.province, 'zh');
+    return (b.issueMonth || '').localeCompare(a.issueMonth || '');
+  });
+
+  // Update stats (always show totals from full dataset)
+  const el = s => document.getElementById(s);
+  if (el('allBondTotal'))        el('allBondTotal').textContent = state.bonds.length;
+  if (el('allBondProvinceCount')) el('allBondProvinceCount').textContent = new Set(state.bonds.map(b => b.province)).size;
+  if (el('allBondSpecialCount')) el('allBondSpecialCount').textContent = state.bonds.filter(b => b.isSpecial).length;
+  if (el('allBondTableCount'))   el('allBondTableCount').textContent = `共 ${bonds.length} 条`;
+
+  if (!bonds.length) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--gray-400)">暂无符合条件的发债记录</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = bonds.map(b => `
+    <tr>
+      <td>
+        <strong>${escHtml(b.province)}</strong><br>
+        <span class="tag ${REGION_COLORS[b.region] || 'tag-blue'}" style="margin-top:3px;display:inline-block">${escHtml(b.region)}</span>
+      </td>
+      <td style="max-width:280px">
+        <div style="font-weight:600;line-height:1.4">${escHtml(b.name)}</div>
+        ${b.batch ? `<div style="font-size:.74rem;color:var(--gray-500);margin-top:2px">${escHtml(b.batch)}</div>` : ''}
+        ${b.isSpecial ? `<span class="tag tag-special" style="margin-top:4px;display:inline-block">✦ 特殊专项债</span>` : ''}
+      </td>
+      <td>
+        <span class="tag ${getBondTypeTag(b.type)}">${escHtml(b.type)}</span>
+        ${b.subtype ? `<br><span style="font-size:.72rem;color:var(--gray-500);margin-top:3px;display:inline-block">${escHtml(b.subtype)}</span>` : ''}
+      </td>
+      <td class="amount">${b.plannedAmount != null ? b.plannedAmount.toFixed(2) : '—'}</td>
+      <td class="actual-amount">${b.actualAmount != null ? b.actualAmount.toFixed(2) : '—'}</td>
+      <td style="text-align:center">${b.term != null ? b.term + '年' : '—'}</td>
+      <td style="max-width:240px;font-size:.78rem;color:var(--gray-700)">${escHtml(b.purpose || '—')}</td>
+      <td style="white-space:nowrap">${b.issueMonth || '—'}</td>
+      <td>
+        <div class="link-group">
+          ${b.links?.credit    ? `<a href="${escHtml(b.links.credit)}" target="_blank" rel="noopener" class="link-icon">资信</a>` : ''}
+          ${b.links?.disclosure ? `<a href="${escHtml(b.links.disclosure)}" target="_blank" rel="noopener" class="link-icon">披露</a>` : ''}
+          ${b.links?.bondInfo  ? `<a href="${escHtml(b.links.bondInfo)}" target="_blank" rel="noopener" class="link-icon">债券</a>` : ''}
+          ${!b.links?.credit && !b.links?.disclosure && !b.links?.bondInfo ? '<span style="color:var(--gray-400);font-size:.75rem">—</span>' : ''}
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
 // ─── Local Summary Grid ───────────────────────────────────────
 function buildSummaryRegionSelector() {
   const container = document.getElementById('provinceSelectorSummary');

@@ -50,6 +50,7 @@
       <button class="sub-tab active" onclick="switchTab('central-policy', this)">🏛️ 中央政策</button>
       <button class="sub-tab" onclick="switchTab('local-policy', this)">🗺️ 地方政策</button>
       <button class="sub-tab" onclick="switchTab('bond-issuance', this)">📋 近三个月发债情况</button>
+      <button class="sub-tab" onclick="switchTab('all-bonds', this); populateAllBondFilters(); renderAllBondsTable()">📊 过去1.5年各省发债详情</button>
     </div>
 
     <!-- ── Tab: 中央政策 ── -->
@@ -166,6 +167,82 @@
         </div>
       </div>
     </div>
+
+    <!-- ── Tab: 过去1.5年各省发债详情 ── -->
+    <div id="all-bonds" class="tab-content" style="display:none">
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label">数据库发债记录总数</div><div class="stat-value" id="allBondTotal">-</div><div class="stat-sub">过去1.5年</div></div>
+        <div class="stat-card green"><div class="stat-label">已覆盖省份数</div><div class="stat-value" id="allBondProvinceCount">-</div><div class="stat-sub">个省份/自治区</div></div>
+        <div class="stat-card orange"><div class="stat-label">特殊专项债（补充财力/清欠）</div><div class="stat-value" id="allBondSpecialCount">-</div><div class="stat-sub">笔</div></div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <span class="filter-label">区域:</span>
+          <select class="filter-select" id="allBondRegionFilter" onchange="onAllBondRegionChange()">
+            <option value="">全部区域</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">省份:</span>
+          <select class="filter-select" id="allBondProvinceFilter" onchange="renderAllBondsTable()">
+            <option value="">全部省份</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">债券类型:</span>
+          <select class="filter-select" id="allBondTypeFilter" onchange="renderAllBondsTable()">
+            <option value="">全部类型</option>
+            <option value="新增专项债">新增专项债</option>
+            <option value="再融资专项债">再融资专项债</option>
+            <option value="再融资一般债">再融资一般债</option>
+            <option value="新增一般债">新增一般债</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">仅看特殊专项债:</span>
+          <input type="checkbox" id="allBondSpecialFilter" onchange="renderAllBondsTable()" style="width:16px;height:16px;cursor:pointer">
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="resetAllBondFilters()">重置筛选</button>
+      </div>
+
+      <!-- Province quick-select chips -->
+      <div style="margin-bottom:12px">
+        <div style="font-size:.8rem;font-weight:600;color:var(--gray-700);margin-bottom:8px">快速选择省份：</div>
+        <div class="province-selector" id="allBondProvinceChips"></div>
+      </div>
+
+      <!-- Full bond table -->
+      <div class="table-wrap">
+        <div class="table-header">
+          <span class="table-title">过去1.5年发债明细（按省份排列）</span>
+          <span class="table-count" id="allBondTableCount"></span>
+        </div>
+        <div class="scrollable-table">
+          <table class="data-table" id="allBondTable">
+            <thead>
+              <tr>
+                <th>省份</th>
+                <th>债券名称及批次</th>
+                <th>债券类型</th>
+                <th>计划发行(亿元)</th>
+                <th>实际发行(亿元)</th>
+                <th>期限(年)</th>
+                <th>资金募集用途</th>
+                <th>发行月份</th>
+                <th>相关政策材料原文链接</th>
+              </tr>
+            </thead>
+            <tbody id="allBondTableBody">
+              <tr class="loading-row"><td colspan="9"><div class="spinner"></div> 加载中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </section>
 
   <!-- ╔═══════════════════════════════════════╗
