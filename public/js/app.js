@@ -655,6 +655,172 @@ function formatAmt(n) {
 
 function id(s) { return document.getElementById(s); }
 
+// ─── 中央补贴 Page ───────────────────────────────────────────
+const SUBSIDY_TYPE_COLORS = {
+  '新闻稿件': 'tag-blue',
+  '政府文件': 'tag-orange',
+  '研报': 'tag-special'
+};
+const RELEVANCE_COLORS = {
+  'green': 'var(--green-700)', 'blue': 'var(--blue-900)',
+  'purple': '#6A1B9A', 'orange': '#E65100'
+};
+
+let subsidiesData = null;
+let currentSubsidyChannel = 'ultra-bond';
+let subsidiesProvFilter = null;
+
+async function loadSubsidiesData() {
+  if (subsidiesData) return subsidiesData;
+  try {
+    const r = await fetch('/data/subsidies.json');
+    subsidiesData = await r.json();
+  } catch (e) { subsidiesData = { channels: [] }; }
+  return subsidiesData;
+}
+
+async function initSubsidiesPage() {
+  const data = await loadSubsidiesData();
+  const el = document.getElementById('subsidyDateRange');
+  if (el && state.metadata.dataRangeStartLabel && state.metadata.dataRangeEndLabel) {
+    el.textContent = state.metadata.dataRangeStartLabel + ' — ' + state.metadata.dataRangeEndLabel;
+  }
+  renderSubsidyChannel(currentSubsidyChannel);
+}
+
+function switchSubsidyChannel(channelId, btn) {
+  currentSubsidyChannel = channelId;
+  subsidiesProvFilter = null;
+  document.querySelectorAll('#central-subsidies .sub-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderSubsidyChannel(channelId);
+}
+
+async function renderSubsidyChannel(channelId) {
+  const data = await loadSubsidiesData();
+  const channel = (data.channels || []).find(c => c.id === channelId);
+  const container = document.getElementById('subsidyChannelDetail');
+  if (!channel || !container) return;
+
+  const provinces = Object.keys(channel.provinces || {});
+  const relevColor = RELEVANCE_COLORS[channel.relevanceColor] || 'var(--blue-900)';
+
+  container.innerHTML = `
+    <!-- 渠道概览 -->
+    <div class="section-card" style="margin-bottom:16px">
+      <div class="section-card-body">
+        <div style="display:flex; flex-wrap:wrap; gap:16px; align-items:flex-start">
+          <div style="flex:1; min-width:260px">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px">
+              <span style="font-size:1.5rem">${channel.icon}</span>
+              <div>
+                <div style="font-size:1rem; font-weight:700; color:var(--gray-900)">${escHtml(channel.name)}</div>
+                <span class="tag" style="background:${relevColor}1a; color:${relevColor}; border:1px solid ${relevColor}40; font-size:.7rem">
+                  ${escHtml(channel.relevanceLevel)}
+                </span>
+              </div>
+              ${channel.annualAmount ? `<div style="margin-left:auto; text-align:right">
+                <div style="font-size:1.4rem; font-weight:800; color:${relevColor}">${channel.annualAmount.toLocaleString()}</div>
+                <div style="font-size:.7rem; color:var(--gray-500)">${escHtml(channel.unit)}</div>
+              </div>` : ''}
+            </div>
+            <div style="font-size:.8rem; color:var(--gray-700); line-height:1.7; margin-bottom:10px">${escHtml(channel.description)}</div>
+            <div style="padding:10px 12px; background:#FFF8E1; border-radius:6px; border:1px solid #FFD54F; font-size:.78rem; color:#E65100; line-height:1.6">
+              <strong>⚡ 与化债的关联：</strong>${escHtml(channel.relevanceNote)}
+            </div>
+          </div>
+          <div style="min-width:240px; max-width:320px">
+            <div style="font-size:.78rem; font-weight:700; color:var(--gray-700); margin-bottom:8px">📋 申报条件摘要</div>
+            <ul style="margin:0; padding-left:16px; font-size:.75rem; color:var(--gray-700); line-height:1.8">
+              ${(channel.applicationConditions || []).map(c => `<li>${escHtml(c)}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+        <div style="margin-top:12px; padding:10px 14px; background:var(--green-50); border-radius:6px; border:1px solid var(--green-100); font-size:.78rem; color:var(--gray-700)">
+          <strong style="color:var(--green-800)">申报路径：</strong>${escHtml(channel.applicationPath)}
+        </div>
+        ${(channel.keyDates || []).length ? `
+        <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px">
+          ${channel.keyDates.map(d => `
+            <div style="padding:6px 12px; background:var(--blue-50); border-radius:6px; border:1px solid var(--blue-100); font-size:.74rem">
+              <strong style="color:var(--blue-900)">${escHtml(d.label)}</strong>
+              <span style="color:var(--gray-500); margin:0 4px">|</span>
+              <span style="color:var(--blue-700)">${escHtml(d.date)}</span>
+              <span style="color:var(--gray-500); margin-left:4px">${escHtml(d.note)}</span>
+            </div>
+          `).join('')}
+        </div>` : ''}
+      </div>
+    </div>
+
+    <!-- 省份筛选 -->
+    <div style="margin-bottom:12px">
+      <div style="font-size:.8rem; font-weight:600; color:var(--gray-700); margin-bottom:8px">按省份查看政策文件：</div>
+      <div class="province-selector" id="subsidyProvChips">
+        <button class="province-chip ${!subsidiesProvFilter ? 'active' : ''}" onclick="filterSubsidyProv(null, this)">全部省份</button>
+        ${provinces.map(p => `<button class="province-chip ${subsidiesProvFilter === p ? 'active' : ''}" onclick="filterSubsidyProv('${escHtml(p)}', this)">${escHtml(p)}</button>`).join('')}
+      </div>
+    </div>
+
+    <!-- 省份条目列表 -->
+    <div id="subsidyProvinceList">${renderSubsidyProvinces(channel, null)}</div>
+  `;
+}
+
+function filterSubsidyProv(prov, btn) {
+  subsidiesProvFilter = prov;
+  document.querySelectorAll('#subsidyProvChips .province-chip').forEach(c => c.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const data = subsidiesData;
+  const channel = (data?.channels || []).find(c => c.id === currentSubsidyChannel);
+  const container = document.getElementById('subsidyProvinceList');
+  if (channel && container) container.innerHTML = renderSubsidyProvinces(channel, prov);
+}
+
+function renderSubsidyProvinces(channel, filterProv) {
+  const provincesObj = channel.provinces || {};
+  const toShow = filterProv ? { [filterProv]: provincesObj[filterProv] } : provincesObj;
+  const entries = Object.entries(toShow).filter(([, v]) => v);
+
+  if (!entries.length) return `<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-text">暂无该省份数据</div></div>`;
+
+  return entries.map(([prov, provData]) => {
+    const regionColor = REGION_COLORS[provData.region] || 'tag-blue';
+    const entryCards = (provData.entries || []).map(e => {
+      const typeColor = SUBSIDY_TYPE_COLORS[e.type] || 'tag-blue';
+      const cities = (e.cities || []).join('、');
+      return `
+        <div style="padding:12px 0; border-bottom:1px solid var(--gray-100); last-child:border:none">
+          <div style="display:flex; align-items:flex-start; gap:8px; margin-bottom:6px">
+            <span class="tag ${typeColor}" style="white-space:nowrap; flex-shrink:0">${escHtml(e.type)}</span>
+            <div style="font-weight:600; font-size:.85rem; line-height:1.4">${escHtml(e.title)}</div>
+            <span style="margin-left:auto; font-size:.75rem; color:var(--gray-400); white-space:nowrap; flex-shrink:0">📅 ${e.date}</span>
+          </div>
+          <div style="font-size:.78rem; color:var(--gray-700); line-height:1.6; margin-bottom:6px">${escHtml(e.summary)}</div>
+          ${cities ? `<div style="font-size:.74rem; color:var(--gray-500); margin-bottom:6px">📍 覆盖城市：${escHtml(cities)}</div>` : ''}
+          <div style="padding:6px 10px; background:var(--green-50); border-radius:4px; border-left:3px solid var(--green-400); font-size:.75rem; color:var(--green-800)">
+            <strong>⚡ 行动建议：</strong>${escHtml(e.actionable || '')}
+          </div>
+          ${e.url ? `<div style="margin-top:6px"><a href="${escHtml(e.url)}" target="_blank" rel="noopener" class="link-icon">🔗 查看原文来源</a></div>` : ''}
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="section-card" style="margin-bottom:12px">
+        <div class="section-card-header">
+          <div style="display:flex; align-items:center; gap:8px">
+            <strong>${escHtml(prov)}</strong>
+            <span class="tag ${regionColor}">${escHtml(provData.region)}</span>
+            <span style="font-size:.74rem; color:var(--gray-400)">${(provData.entries || []).length} 条记录</span>
+          </div>
+        </div>
+        <div class="section-card-body">${entryCards}</div>
+      </div>
+    `;
+  }).join('');
+}
+
 // ─── Init ────────────────────────────────────────────────────
 async function init() {
   await fetchData();

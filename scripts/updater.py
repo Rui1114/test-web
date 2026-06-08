@@ -13,6 +13,7 @@ from pathlib import Path
 log = logging.getLogger(__name__)
 BASE = Path(__file__).parent.parent
 DATA = BASE / 'data'
+PUBLIC_DATA = BASE / 'public' / 'data'
 RETENTION_MONTHS = int(os.environ.get('DATA_RETENTION_MONTHS', '18'))
 
 # ─── Helpers ───────────────────────────────────────────────────────────────
@@ -24,6 +25,11 @@ def read_json(name):
 def write_json(name, data):
     with open(DATA / name, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+    # Mirror to public/data/ so Nginx static serving also gets updates
+    pub = PUBLIC_DATA / name
+    if pub.parent.exists():
+        with open(pub, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
 
 def get_cutoff():
     today = datetime.date.today()

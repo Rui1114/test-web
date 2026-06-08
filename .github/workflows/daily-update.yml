@@ -2,10 +2,8 @@ name: 每日数据更新
 
 on:
   schedule:
-    # 00:30 UTC = 08:30 北京时间，每天自动运行
     - cron: '30 0 * * *'
   workflow_dispatch:
-    # 支持在 GitHub 网页上手动点击触发
 
 jobs:
   update:
@@ -32,28 +30,51 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python scripts/daily_update.py
 
+      - name: 确保 metadata 时间戳更新
+        run: |
+          python3 - <<'PYEOF'
+          import json, datetime
+          from pathlib import Path
+          for p in [Path('public/data/metadata.json'), Path('data/metadata.json')]:
+              if p.exists():
+                  m = json.loads(p.read_text())
+                  m['lastUpdated'] = datetime.date.today().isoformat()
+                  m['lastUpdateTime'] = datetime.datetime.utcnow().isoformat()
+                  p.write_text(json.dumps(m, ensure_ascii=False, indent=2))
+                  print(f'Updated {p}')
+          PYEOF
+
       - name: 提交并推送更新
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/data/
-          if git diff --cached --quiet; then
-            echo "数据无变化，跳过提交"
-          else
-            git commit -m "每日数据更新 $(date '+%Y-%m-%d %H:%M') UTC"
-            git push
-          fi
+          git add public/data/ data/
+          git diff --cached --quiet && echo "No changes" || git commit -m "每日数据更新 $(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M') 北京时间"
+          git push
 
-      - name: 安装腾讯云 CLI 工具
-        run: pip install coscmd
-
-      - name: 同步到腾讯云COS（香港）
+      - name: 同步到腾讯云COS（可选）
         env:
           COS_SECRET_ID: ${{ secrets.COS_SECRET_ID }}
           COS_SECRET_KEY: ${{ secrets.COS_SECRET_KEY }}
           COS_BUCKET: ${{ secrets.COS_BUCKET }}
         run: |
-          coscmd config -a "$COS_SECRET_ID" -s "$COS_SECRET_KEY" \
-            -b "$COS_BUCKET" -r ap-hongkong
-          coscmd upload -rs --delete public/ /
-          echo "✅ 腾讯云COS同步完成"
+          if [ -z "$COS_SECRET_ID" ]; then
+            echo "未配置COS密钥，跳过COS同步"
+            exit 0
+          fi
+          pip install coscmd
+          coscmd config -a "$COS_SECRET_ID" -s "$COS_SECRET_KEY" -b "$COS_BUCKET" -r ap-hongkong
+          coscmd upload -rs --delete public/ / || echo "COS同步失败，已跳过（不影响GitHub更新）"
+
+      - name: 部署到香港VPS服务器（可选）
+        uses: appleboy/ssh-action@v1.0.3
+        if: ${{ secrets.VPS_HOST != '' }}
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /var/www/html
+            git fetch origin main
+            git reset --hard origin/main
+            echo "VPS已同步 $(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M') 北京时间"
