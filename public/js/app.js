@@ -1462,7 +1462,16 @@ function renderHzSummary() {
 function renderHzRegionDrawers() {
   const wrap = document.getElementById('hz-region-drawers-wrap');
   if (!wrap) return;
+
+  const now = new Date();
+  const bjYear = new Date(now.getTime() + (8*60 - now.getTimezoneOffset())*60000).getUTCFullYear();
+  const lastYear = bjYear - 1;
+
   const hzBonds = getHuaZhaiThisYear();
+  const lastYearHzBonds = state.bonds.filter(b =>
+    parseInt((b.issueMonth||b.addedDate||'2000-01').slice(0,4),10) === lastYear && isHuaZhaiBond(b)
+  );
+
   wrap.innerHTML = `
     <div style="font-size:.88rem;font-weight:700;color:var(--gray-700);margin-bottom:14px;display:flex;align-items:center;gap:10px">
       🗺️ 六大区域化债情况
@@ -1470,11 +1479,22 @@ function renderHzRegionDrawers() {
     </div>
     <div class="region-drawer-grid">
       ${Object.entries(REGIONS).map(([region, provinces]) => {
-        const regionBonds = hzBonds.filter(b => provinces.includes(b.province));
-        const totalAmt = regionBonds.reduce((s,b)=>s+(b.actualAmount||0),0);
-        const aAmt     = regionBonds.filter(isTypeA).reduce((s,b)=>s+(b.actualAmount||0),0);
-        const bAmt     = regionBonds.filter(isTypeB).reduce((s,b)=>s+(b.actualAmount||0),0);
-        const covProv  = [...new Set(regionBonds.map(b=>b.province))].length;
+        const regionBonds   = hzBonds.filter(b => provinces.includes(b.province));
+        const totalAmt      = regionBonds.reduce((s,b)=>s+(b.actualAmount||0),0);
+        const aAmt          = regionBonds.filter(isTypeA).reduce((s,b)=>s+(b.actualAmount||0),0);
+        const bAmt          = regionBonds.filter(isTypeB).reduce((s,b)=>s+(b.actualAmount||0),0);
+        const covProv       = [...new Set(regionBonds.map(b=>b.province))].length;
+
+        const lyRegionAmt   = lastYearHzBonds
+          .filter(b => provinces.includes(b.province))
+          .reduce((s,b)=>s+(b.actualAmount||0),0);
+        const pct           = lyRegionAmt > 0 ? Math.min(100, totalAmt / lyRegionAmt * 100) : null;
+        const pctLabel      = pct !== null ? pct.toFixed(1) + '%' : '去年无数据';
+        const fillColor     = pct !== null && pct >= 100
+          ? 'linear-gradient(90deg,var(--green-800),var(--green-400))'
+          : 'linear-gradient(90deg,var(--blue-700),var(--blue-500))';
+        const labelColor    = pct !== null && pct >= 100 ? 'var(--green-700)' : 'var(--blue-800)';
+
         return `
           <div class="region-drawer-card">
             <div class="region-drawer-header" onclick="openHzRegionDetail('${region}')">
@@ -1496,6 +1516,19 @@ function renderHzRegionDrawers() {
               已覆盖 <strong>${covProv}</strong> 个省份，共 <strong>${regionBonds.length}</strong> 笔化债债券，
               合计实际发行 <strong>${totalAmt.toFixed(0)}亿元</strong>
               ${totalAmt > 0 ? `（特殊新增${(aAmt/totalAmt*100).toFixed(0)}% / 特殊再融资${(bAmt/totalAmt*100).toFixed(0)}%）` : ''}
+            </div>
+            <div style="padding:8px 14px 10px;background:var(--gray-50);border-top:1px solid var(--gray-100)">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                <span style="font-size:.69rem;color:var(--gray-500)">${bjYear}年发债进度（对比${lastYear}年全年）</span>
+                <strong style="font-size:.78rem;color:${labelColor}">${pctLabel}</strong>
+              </div>
+              <div style="height:6px;background:var(--gray-200);border-radius:3px;overflow:hidden">
+                <div style="height:100%;width:${pct||0}%;background:${fillColor};border-radius:3px;transition:width .6s ease"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:.66rem;color:var(--gray-400);margin-top:3px">
+                <span>${bjYear}年已发 ${totalAmt.toFixed(0)}亿</span>
+                <span>${lastYear}年全年 ${lyRegionAmt > 0 ? lyRegionAmt.toFixed(0)+'亿' : '无数据'}</span>
+              </div>
             </div>
           </div>`;
       }).join('')}
