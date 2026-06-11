@@ -27,9 +27,11 @@
   --red-600: #C62828;
   --red-50:  #FFEBEE;
   --gray-900: #212121;
+  --gray-800: #303030;
   --gray-700: #424242;
   --gray-600: #616161;
   --gray-400: #9E9E9E;
+  --gray-300: #BDBDBD;
   --gray-200: #EEEEEE;
   --gray-100: #F5F5F5;
   --gray-50:  #FAFAFA;
@@ -310,6 +312,40 @@ body { font-family: 'Inter', 'Noto Sans SC', sans-serif; color: var(--gray-900);
 .ai-box-time { font-size: .7rem; color: #7E57C2; margin-left: auto; }
 .ai-box-content { font-size: .82rem; color: var(--gray-800); line-height: 1.7; white-space: pre-wrap; }
 .ai-box-loading { color: #9E9E9E; font-style: italic; font-size: .82rem; }
+
+/* ─── BOND SUB-VIEW nav (Level-4 within 全类别债券) ─────── */
+.bond-sub-nav {
+  display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap;
+}
+.bond-sub-btn {
+  padding: 5px 14px; font-size: .76rem; font-weight: 500;
+  background: var(--gray-100); color: var(--gray-600);
+  border: 1.5px solid var(--gray-200); border-radius: 14px;
+  cursor: pointer; transition: all .15s;
+}
+.bond-sub-btn:hover { border-color: var(--blue-400); color: var(--blue-700); }
+.bond-sub-btn.active {
+  background: #E3F2FD; color: var(--blue-800);
+  border-color: var(--blue-500);
+}
+
+/* ─── INNER SUB-NAV (Level-3 tabs) ──────────────────────── */
+.inner-sub-nav {
+  display: flex; gap: 6px; margin-bottom: 14px;
+  flex-wrap: wrap; padding-bottom: 10px;
+  border-bottom: 1px solid var(--gray-200);
+}
+.inner-sub-tab {
+  padding: 5px 14px; font-size: .78rem; font-weight: 500;
+  background: var(--gray-50); color: var(--gray-600);
+  border: 1.5px solid var(--gray-200); border-radius: 16px;
+  cursor: pointer; transition: all .15s;
+}
+.inner-sub-tab:hover { border-color: var(--blue-400); color: var(--blue-700); }
+.inner-sub-tab.active {
+  background: var(--blue-700); color: var(--white);
+  border-color: var(--blue-700);
+}
 
 /* ─── PROVINCE SELECTOR ──────────────────────────────────── */
 .province-selector {

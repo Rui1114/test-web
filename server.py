@@ -116,27 +116,29 @@ def serve_static(path):
         return send_from_directory(str(PUBLIC), path)
     return send_from_directory(str(PUBLIC), 'index.html')
 
-# ─── Daily Scheduler (8:30 AM Beijing Time = 00:30 UTC) ─────────────────────
+# ─── Weekly Scheduler (08:30 AM Beijing Time Monday = 00:30 UTC Monday) ────────
 
 def schedule_loop():
-    """Run in background thread; fires daily at 8:30 AM Beijing (00:30 UTC)."""
-    log.info('Scheduler thread started. Will update at 00:30 UTC (08:30 Beijing) daily.')
+    """Run in background thread; fires every Monday at 8:30 AM Beijing (00:30 UTC)."""
+    log.info('Scheduler thread started. Will update every Monday at 00:30 UTC (08:30 Beijing).')
     while True:
         now_utc = datetime.datetime.utcnow()
-        # Next target: today or tomorrow at 00:30 UTC
+        # Next Monday 00:30 UTC
+        days_until_monday = (7 - now_utc.weekday()) % 7  # 0=Mon, 6=Sun
         target = now_utc.replace(hour=0, minute=30, second=0, microsecond=0)
-        if now_utc >= target:
-            target += datetime.timedelta(days=1)
+        if days_until_monday == 0 and now_utc >= target:
+            days_until_monday = 7
+        target += datetime.timedelta(days=days_until_monday)
         wait_secs = (target - now_utc).total_seconds()
-        log.info(f'Next update scheduled in {wait_secs/3600:.1f}h at {target} UTC')
+        log.info(f'Next update (Monday) scheduled in {wait_secs/3600:.1f}h at {target} UTC')
         time.sleep(wait_secs)
-        log.info('Running daily scheduled update...')
+        log.info('Running weekly scheduled update...')
         try:
             from scripts.updater import run_update
             run_update()
-            log.info('Daily update completed.')
+            log.info('Weekly update completed.')
         except Exception as e:
-            log.error(f'Daily update failed: {e}')
+            log.error(f'Weekly update failed: {e}')
 
 # ─── Main ────────────────────────────────────────────────────────────────────
 
@@ -152,7 +154,7 @@ if __name__ == '__main__':
   Policy Debt Intelligence v2.0
   政策化债追踪工作台
   http://localhost:{port}
-  Auto-update: Daily at 08:30 AM Beijing Time
+  Auto-update: Every Monday at 08:30 AM Beijing Time
 =================================================
 """)
     app.run(host='0.0.0.0', port=port, debug=False)
