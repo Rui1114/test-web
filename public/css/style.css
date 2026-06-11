@@ -313,6 +313,30 @@ body { font-family: 'Inter', 'Noto Sans SC', sans-serif; color: var(--gray-900);
 .ai-box-content { font-size: .82rem; color: var(--gray-800); line-height: 1.7; white-space: pre-wrap; }
 .ai-box-loading { color: #9E9E9E; font-style: italic; font-size: .82rem; }
 
+/* ─── 中央补贴 全局检索栏 ─────────────────────────────────── */
+.subsidy-search-bar {
+  background: linear-gradient(135deg, #F3E5F5, #EDE7F6);
+  border: 1.5px solid #B39DDB;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+}
+.subsidy-search-label {
+  font-size: .85rem; font-weight: 700; color: #6A1B9A;
+  margin-bottom: 10px;
+}
+.subsidy-search-row {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+}
+.subsidy-search-input {
+  flex: 1; min-width: 220px;
+  border-color: #B39DDB !important;
+  background: #fff !important;
+}
+.subsidy-search-hint {
+  font-size: .72rem; color: #7E57C2;
+}
+
 /* ─── BOND SUB-VIEW nav (Level-4 within 全类别债券) ─────── */
 .bond-sub-nav {
   display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap;
