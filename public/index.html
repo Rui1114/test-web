@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>政策化债追踪工作台 | Policy Debt Intelligence</title>
-<link rel="stylesheet" href="css/style.css?v=20260611b">
+<link rel="stylesheet" href="css/style.css?v=20260611d">
 </head>
 <body>
 
@@ -164,52 +164,26 @@
      ╚═══════════════════════════════════════════════════════╝ -->
 <section id="central-subsidies" class="page" style="display:none">
 
-  <div class="section-card" style="margin-bottom:16px; border-left:4px solid #7B1FA2; background:linear-gradient(135deg,#F3E5F5,#fff)">
-    <div class="section-card-body" style="padding:16px 20px">
-      <div style="font-size:.88rem; font-weight:700; color:#6A1B9A; margin-bottom:8px">💡 中央补贴板块使用指南 — 项目经理化债申请前期研究工具</div>
-      <div style="font-size:.8rem; color:var(--gray-700); line-height:1.7">
-        本板块聚焦<strong>四大中央补贴渠道</strong>，帮助项目经理在申请前期了解：①每个渠道有什么资金、覆盖哪些方向；②申报前提条件和流程；③各省市已有哪些政策文件、新闻和研报原文。
-        核心逻辑：协助地方政府申报中央补贴资金 → 换取政府承诺优先偿还服务类欠款 → 化债目标实现。
-        覆盖时间：<span id="subsidyDateRange">前年+本年</span> | 地区范围：依照业务覆盖区域（省-市-县三级）
-      </div>
+  <!-- 柜子表面：四大渠道总结 + 六大区域抽屉 -->
+  <div id="cs-cabinet-overview">
+    <div id="cs-channel-summaries-wrap"></div>
+    <div id="cs-region-drawers-wrap"></div>
+  </div>
+
+  <!-- 抽屉内容：省份详情 -->
+  <div id="cs-region-detail" style="display:none">
+    <div class="region-detail-back">
+      <button class="btn btn-ghost btn-sm" onclick="closeSubsidyRegionDetail()">← 返回政策性资金</button>
+      <span id="cs-region-detail-title" style="font-weight:700;color:var(--blue-900);font-size:.95rem"></span>
     </div>
+    <div id="cs-region-detail-content"></div>
   </div>
-
-  <!-- 城市/地区检索栏（跨四大渠道全局搜索） -->
-  <div class="subsidy-search-bar">
-    <div class="subsidy-search-label">🔍 按城市 / 县区检索（四大渠道全局）：</div>
-    <div class="subsidy-search-row">
-      <input id="subsidyCitySearch"
-             class="filter-input subsidy-search-input"
-             placeholder="输入市、县、区名称（如：贵阳、宜宾、呼和浩特…）"
-             oninput="onSubsidyCitySearch(this.value)">
-      <button class="btn btn-ghost btn-sm" onclick="clearSubsidySearch()">✕ 清除</button>
-      <span class="subsidy-search-hint">匹配四大渠道所有政策文件的覆盖城市字段</span>
-    </div>
-  </div>
-
-  <!-- 搜索结果面板（有搜索词时显示） -->
-  <div id="subsidySearchResults" style="display:none"></div>
-
-  <!-- 渠道 tabs + 详情（无搜索词时显示） -->
-  <div id="subsidyChannelArea">
-  <div class="sub-nav">
-    <button class="sub-tab active" id="subTab-ultra-bond" onclick="switchSubsidyChannel('ultra-bond', this)">🏛️ 超长期特别国债</button>
-    <button class="sub-tab" id="subTab-central-budget" onclick="switchSubsidyChannel('central-budget', this)">🏗️ 中央预算内投资</button>
-    <button class="sub-tab" id="subTab-policy-finance" onclick="switchSubsidyChannel('policy-finance', this)">🏦 新型政策性金融工具</button>
-    <button class="sub-tab" id="subTab-industry-subsidy" onclick="switchSubsidyChannel('industry-subsidy', this)">💰 行业专项补贴</button>
-  </div>
-
-  <div id="subsidyChannelDetail">
-    <div style="text-align:center; padding:60px; color:var(--gray-400)"><div class="spinner"></div> 加载中...</div>
-  </div>
-  </div><!-- /subsidyChannelArea -->
 
 </section><!-- /central-subsidies -->
 
 </div><!-- /app-body -->
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="js/app.js?v=20260611c"></script>
+<script src="js/app.js?v=20260611d"></script>
 </body>
 </html>

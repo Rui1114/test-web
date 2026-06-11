@@ -705,13 +705,161 @@ async function loadSubsidiesData() {
   return subsidiesData;
 }
 
+// ─── 政策性资金：区域描述（六大区域）──────────────────────────
+const SUBSIDY_REGION_SUMMARIES = {
+  '北部区域': '河北自审自发试点获批后超长期特别国债和中央预算内投资申报节奏提速，吉林退出高风险名单后环境基础设施申报空间打开，内蒙古已获行业专项补贴支持并与154.5亿清欠资金叠加推进；北部区域2026年政策性资金整体活跃度持续提升。',
+  '中部区域': '河南是中部区域政策落地最活跃省份，超长期特别国债设备更新已覆盖郑州、洛阳等核心城市，中央预算内投资在171个清欠台账项目框架下持续下达；山西、陕西2026年申报窗口保持开放，建议重点跟进中央预算内投资新一批次动态。',
+  '西南区域': '四川是超长期特别国债和中央预算内投资全国最活跃省份之一，多批次资金已有效支撑债务清偿；云南获新型政策性金融工具优先支持，2026年8000亿工具资金西南区域分配比例较高，资金到位后30–60天为最佳催款窗口。',
+  '贵州区域': '贵州是四大政策性资金渠道全覆盖、政策倾斜最强的省份。2025年超长期国债设备更新已落位约18亿，中央预算内投资、新型政策性金融工具、行业专项补贴均有专项安排；2026年继续扩围申报，是业务优先跟进区域。',
+  '华南区域': '广东超长期特别国债支持规模全国领先，环保基础设施申报条件最成熟；广西、湖南受行业专项补贴重点覆盖，湖南清欠督查激励体系叠加补贴资金到位；三省均已启动2026年中央预算内投资备案申报，华南为整体政策活跃度最高区域之一。',
+  '东部区域': '东部区域财政实力较强，中央配套比例相对偏低；山东、浙江暂无政策性资金记录，但中央预算内投资和超长期特别国债渠道对两省保持开放，建议持续关注2026年扩围申报批次动态。'
+};
+
 async function initSubsidiesPage() {
   const data = await loadSubsidiesData();
-  const el = document.getElementById('subsidyDateRange');
-  if (el && state.metadata.dataRangeStartLabel && state.metadata.dataRangeEndLabel) {
-    el.textContent = state.metadata.dataRangeStartLabel + ' — ' + state.metadata.dataRangeEndLabel;
+  renderSubsidiesCabinet(data);
+}
+
+function renderSubsidiesCabinet(data) {
+  const overview = document.getElementById('cs-cabinet-overview');
+  const detail   = document.getElementById('cs-region-detail');
+  if (overview) overview.style.display = 'block';
+  if (detail)   detail.style.display   = 'none';
+  renderCSChannelSummaries(data);
+  renderCSRegionDrawers(data);
+}
+
+function renderCSChannelSummaries(data) {
+  const wrap = document.getElementById('cs-channel-summaries-wrap');
+  if (!wrap) return;
+  const channels = (data && data.channels) || [];
+  wrap.innerHTML = `
+    <div class="section-card" style="margin-bottom:22px">
+      <div class="section-card-header">
+        <div class="section-card-title">📋 政策性资金 — 四大渠道全国概览</div>
+        <span class="tag tag-blue">2025–2026年</span>
+      </div>
+      <div class="section-card-body">
+        ${channels.map((ch, i) => `
+          <div style="margin-bottom:${i < channels.length-1 ? '18px' : '0'};${i < channels.length-1 ? 'padding-bottom:18px;border-bottom:1px solid var(--gray-100)' : ''}">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <span style="font-size:1.1rem">${ch.icon || ''}</span>
+              <span style="font-size:.9rem;font-weight:700;color:var(--blue-900)">${escHtml(ch.name)}</span>
+              ${ch.annualAmount ? `<span class="tag tag-special" style="margin-left:auto;font-size:.7rem">${ch.annualAmount.toLocaleString()}${escHtml(ch.unit||'')}</span>` : ''}
+            </div>
+            <p style="font-size:.83rem;color:var(--gray-700);line-height:1.85;margin:0 0 6px">
+              ${escHtml(ch.description)} <span style="color:#E65100;font-weight:600">⚡ ${escHtml(ch.relevanceNote)}</span>
+            </p>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+}
+
+function renderCSRegionDrawers(data) {
+  const wrap = document.getElementById('cs-region-drawers-wrap');
+  if (!wrap) return;
+  const channels = (data && data.channels) || [];
+
+  // Build lookup: province → Set of channel ids with data
+  const provChannels = {};
+  channels.forEach(ch => {
+    Object.keys(ch.provinces || {}).forEach(prov => {
+      const entries = (ch.provinces[prov].entries || []);
+      if (entries.length) {
+        if (!provChannels[prov]) provChannels[prov] = new Set();
+        provChannels[prov].add(ch.id);
+      }
+    });
+  });
+
+  wrap.innerHTML = `
+    <div style="font-size:.88rem;font-weight:700;color:var(--gray-700);margin-bottom:14px;display:flex;align-items:center;gap:10px">
+      🗺️ 六大区域政策性资金情况
+      <span style="font-size:.75rem;font-weight:400;color:var(--gray-500)">点击区域查看各省详细政策文件</span>
+    </div>
+    <div class="region-drawer-grid">
+      ${Object.entries(REGIONS).map(([region, provinces]) => {
+        const covProvs = provinces.filter(p => provChannels[p]);
+        const totalEntries = covProvs.reduce((s, p) => s + (provChannels[p] ? provChannels[p].size : 0), 0);
+        const summary = SUBSIDY_REGION_SUMMARIES[region] || '';
+        return `
+          <div class="region-drawer-card">
+            <div class="region-drawer-header" onclick="openSubsidyRegionDetail('${region}')">
+              <div class="region-drawer-title">
+                <span class="region-drawer-name">${region}</span>
+                <span class="region-drawer-count">${covProvs.length} 个省份有数据</span>
+              </div>
+              <div class="region-drawer-provinces">
+                ${provinces.map(p => `<span class="province-mini-tag" style="${provChannels[p] ? '' : 'opacity:.4'}">${p}</span>`).join('')}
+              </div>
+              <div style="margin-top:6px;display:flex;justify-content:flex-end">
+                <span class="region-drawer-arrow">查看详情 →</span>
+              </div>
+            </div>
+            <div class="region-drawer-summary">${escHtml(summary)}</div>
+          </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function openSubsidyRegionDetail(regionName) {
+  document.getElementById('cs-cabinet-overview').style.display = 'none';
+  const detail = document.getElementById('cs-region-detail');
+  detail.style.display = 'block';
+  document.getElementById('cs-region-detail-title').textContent = regionName + ' — 政策性资金详情';
+
+  const provinces = REGIONS[regionName] || [];
+  const channels  = (subsidiesData && subsidiesData.channels) || [];
+
+  let html = '';
+  for (const province of provinces) {
+    // Collect per-channel entries for this province
+    const chSections = channels
+      .map(ch => {
+        const provData = (ch.provinces || {})[province];
+        const entries  = provData ? (provData.entries || []) : [];
+        return { id: ch.id, name: ch.name, icon: ch.icon, entries };
+      })
+      .filter(s => s.entries.length > 0);
+
+    if (!chSections.length) continue;
+
+    html += `<div class="section-card" style="margin-bottom:14px">
+      <div class="section-card-header">
+        <div class="section-card-title">${province}</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          ${chSections.map(s => `<span class="tag tag-blue" style="font-size:.68rem">${s.icon} ${escHtml(s.name)}</span>`).join('')}
+        </div>
+      </div>
+      <div class="section-card-body" style="padding:10px 16px">
+        ${chSections.map(s => `
+          <div style="margin-bottom:14px">
+            <div style="font-size:.8rem;font-weight:700;color:var(--blue-900);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--gray-100)">
+              ${s.icon} ${escHtml(s.name)}
+            </div>
+            ${s.entries.map(e => `
+              <div class="policy-card local" style="margin-bottom:8px">
+                <div class="policy-card-header">
+                  <div class="policy-title">${escHtml(e.title)}</div>
+                  <span class="tag ${SUBSIDY_TYPE_COLORS[e.type]||'tag-blue'}" style="white-space:nowrap;font-size:.68rem">${escHtml(e.type)}</span>
+                </div>
+                <div class="policy-meta"><span class="policy-date">📅 ${escHtml(e.date||'')}</span></div>
+                <div class="policy-summary">${escHtml(e.summary||'')}</div>
+                <div class="policy-footer">${e.url ? `<a href="${escHtml(e.url)}" target="_blank" rel="noopener" class="link-icon">🔗 原文</a>` : ''}</div>
+              </div>`).join('')}
+          </div>`).join('')}
+      </div>
+    </div>`;
   }
-  renderSubsidyChannel(currentSubsidyChannel);
+
+  if (!html) html = `<div class="empty-state"><div class="empty-icon">🗺️</div><div class="empty-text">${regionName}暂无政策性资金收录数据</div></div>`;
+  document.getElementById('cs-region-detail-content').innerHTML = html;
+}
+
+function closeSubsidyRegionDetail() {
+  document.getElementById('cs-region-detail').style.display = 'none';
+  document.getElementById('cs-cabinet-overview').style.display = 'block';
 }
 
 function switchSubsidyChannel(channelId, btn) {
