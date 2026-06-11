@@ -10,10 +10,9 @@ const state = {
   metadata: {},
   regions: {},
   selectedLocalProvince: null,
-  selectedSummaryRegion: null,
   currentPage: 'local-bonds',
   currentLBTab: 'lb-overview',
-  currentInnerTabs: { 'lb-tracking': 'central-policy', 'lb-monthly': 'central-summary' }
+  currentInnerTabs: { 'lb-tracking': 'central-policy' }
 };
 
 // ─── Region definitions ───────────────────────────────────────
@@ -33,70 +32,6 @@ const REGION_COLORS = {
   '北部': 'tag-blue', '中部': 'tag-orange',
   '西南': 'tag-orange', '贵州': 'tag-red',
   '华南': 'tag-blue', '东部': 'tag-teal',
-};
-
-// Local summary enriched data
-const LOCAL_SUMMARY_DATA = {
-  '北部区域': {
-    provinces: ['河北', '辽宁', '吉林', '内蒙古'],
-    totalIssued1to5: 5193,
-    keyInfo: {
-      '河北': { issued: 2261, zhhAmount: 280, specAmount: 149.5, jun: '666亿(新增610亿，年内最高)', strategy: '化债与新增并行', selfReview: true, note: '4月纳入自审自发，6月单月最高' },
-      '辽宁': { issued: 516, zhhAmount: 71.66, specAmount: 73.88, jun: '100-200亿(预测)', strategy: '再融资/化债主导', selfReview: false, note: '特殊专项债61.37%占比，清偿拖欠账款' },
-      '吉林': { issued: 1186, zhhAmount: 482.21, specAmount: 75, jun: '200-300亿(预测)', strategy: '再融资/化债主导', selfReview: false, note: '正式退出高风险名单，新增额度空间打开' },
-      '内蒙古': { issued: 1230, zhhAmount: 573, specAmount: 89, jun: '200-300亿(预测)', strategy: '再融资/化债主导', selfReview: false, note: '154.5亿专项清欠资金分配在即' }
-    },
-    windowAdvice: '所有逾期项目持续对接区县财政局债务科，确认欠款是否录入"全口径债务监测平台"。重点跟进河北6月610亿中补充财力类资金分配；辽宁重点跟进特殊专项债后续批次；吉林利用退出高风险名单的政策红利争取新增额度；内蒙古重点关注154.5亿清欠资金分配方案。'
-  },
-  '中部区域': {
-    provinces: ['河南', '山西', '陕西'],
-    totalIssued1to5: 3547,
-    keyInfo: {
-      '河南': { issued: 1457, zhhAmount: 543.47, specAmount: 16.44, jun: '200-400亿(预测)', strategy: '化债与新增并行', selfReview: false, note: '清欠台账171个项目，省委部署补充财力类资金' },
-      '山西': { issued: 840, zhhAmount: 7.24, specAmount: 30, jun: '约230亿', strategy: '再融资主导', selfReview: false, note: '6月为二季度单月最高，重点关注服务类欠款清理' },
-      '陕西': { issued: 1250, zhhAmount: 209.72, specAmount: 25, jun: '200-300亿(预测)', strategy: '再融资主导', selfReview: false, note: '省政府明确力争隐性债务清零，省委召开专题部署' }
-    },
-    windowAdvice: '陕西省委已召开专题会议部署"加力清理拖欠企业账款"，6月起新增专项债发行将加速。推进已入库项目匹配补充财力类专项债资金，从而实现清欠落地。河南补充财力类项目已涉及171个，建议对接具体资金分配方案。'
-  },
-  '西南区域': {
-    provinces: ['四川', '云南', '重庆'],
-    totalIssued1to5: 5908,
-    keyInfo: {
-      '四川': { issued: 2500, zhhAmount: 802.39, specAmount: 644.2, jun: '355亿(再融资为主)', strategy: '化债与新增并行', selfReview: true, note: '省级承担5%地方配套，减轻市县压力；6月为二季度化债力度最大月份' },
-      '云南': { issued: 1743, zhhAmount: 577.01, specAmount: 4.08, jun: '200-400亿(预测)', strategy: '再融资/化债主导', selfReview: false, note: '5月27日352.1亿置换债到账，建议抓紧对接使用' },
-      '重庆': { issued: 1665, zhhAmount: 800, specAmount: 50, jun: '100亿(再融资)', strategy: '再融资/化债主导', selfReview: true, note: '4月纳入自审自发，再融资持续释放财政现金流' }
-    },
-    windowAdvice: '四川6月再融资345.61亿为二季度最高，是化债资金争取的关键窗口。云南5月27日352.1亿置换债资金到账，建议抓紧对接项目欠款可否应用已到账化债资金。重庆6月再融资持续释放现金流，虽不直接用于清欠，但可争取财政统筹调拨。'
-  },
-  '贵州区域': {
-    provinces: ['贵州'],
-    totalIssued1to5: 1343,
-    keyInfo: {
-      '贵州': { issued: 1343, zhhAmount: 558.19, specAmount: 50, jun: '230亿(新增200亿)', strategy: '再融资/化债主导', selfReview: false, note: '全国化债重点省份，6月新增200亿创年内单月最高，化债资金向清欠倾斜' }
-    },
-    windowAdvice: '贵州作为全国化债重点省份，6月新增专项债200亿为年内最高。建议加快确认欠款纳入全口径债务平台，提前布局与省财政局债务处的对接工作。'
-  },
-  '华南区域': {
-    provinces: ['广东', '福建', '江西', '广西', '湖南', '湖北'],
-    totalIssued1to5: 9344,
-    keyInfo: {
-      '广东': { issued: 2640, zhhAmount: 0, specAmount: 151, jun: '654亿(新增417亿)', strategy: '自审自发先行省', selfReview: true, note: '新增专项债全国占比最高；6月新增417亿全国单月最高' },
-      '福建': { issued: 1373, zhhAmount: 445, specAmount: 40, jun: '100-200亿(预测)', strategy: '自审自发先行省', selfReview: true, note: '全年置换进度89%，剩余额度6月可能完成' },
-      '江西': { issued: 1127, zhhAmount: 450.94, specAmount: 229, jun: '100-300亿(预测)', strategy: '自审自发扩围', selfReview: true, note: '5月新纳入自审自发，审批加速；上报62个环资领域国债项目' },
-      '广西': { issued: 1620, zhhAmount: 150, specAmount: 80, jun: '245亿(全部新增)', strategy: '再融资/化债主导', selfReview: false, note: '6月225亿新增专项债为年内最高，项目回款与投标双重窗口' },
-      '湖南': { issued: 1354, zhhAmount: 516, specAmount: 34.12, jun: '200-400亿(预测)', strategy: '自审自发先行省', selfReview: true, note: '清欠纳入督查激励重点，存量欠款清偿概率高' },
-      '湖北': { issued: 1850, zhhAmount: 620, specAmount: 33.3, jun: '612亿(二季度)', strategy: '自审自发扩围', selfReview: true, note: '4月纳入自审自发，5-6月集中发债；审批效率大幅提升' }
-    },
-    windowAdvice: '广东6月417亿新增专项债为全国单月最高，建议重点逾期项目主动对接地方财政局，探讨纳入化债可行性。福建全年置换进度89%，6月最后窗口，抓紧对接资金用途。湖南"清欠督查激励"叠加化债资金，存量欠款清偿概率高。湖北自审自发扩围后审批效率提升，6月资金拨付加速。'
-  },
-  '东部区域': {
-    provinces: ['山东'],
-    totalIssued1to5: 2011,
-    keyInfo: {
-      '山东': { issued: 2011, zhhAmount: 347, specAmount: 100, jun: '437亿(新增220亿)', strategy: '化债与新增并行', selfReview: true, note: '发行规模大，但化债资金占比偏低；主要用于市政、产业园区、棚改' }
-    },
-    windowAdvice: '山东发债批次密集，但化债资金整体占比偏低，新增专项债以建设类为主。建议重点关注补充财力类资金的专项申请，并利用山东自审自发试点审批效率优势。'
-  }
 };
 
 // ─── Level 1: Main page navigation ──────────────────────────
@@ -247,56 +182,6 @@ function renderOverview() {
       makeCard(lastYear, lastYearBonds, '全年数据');
   }
 
-  // ── Provincial completion bars ──
-  const provComp = document.getElementById('ovProvCompletion');
-  if (provComp) {
-    const provMap = {};
-    thisYearBonds.forEach(b => {
-      if (!b.province) return;
-      if (!provMap[b.province]) provMap[b.province] = { planned: 0, actual: 0, region: b.region || '' };
-      provMap[b.province].planned += b.plannedAmount || 0;
-      provMap[b.province].actual  += b.actualAmount  || 0;
-    });
-    const entries = Object.entries(provMap)
-      .map(([prov, d]) => ({ prov, ...d, rate: d.planned > 0 ? d.actual / d.planned : 0 }))
-      .sort((a, b) => b.actual - a.actual);
-
-    const explanation = `
-      <div style="padding:10px 12px;background:#FFF8E1;border-radius:6px;border:1px solid #FFD54F;margin-bottom:14px;font-size:.78rem;color:#5D4037;line-height:1.7">
-        <strong>📖 如何读懂这张图：</strong>
-        每行代表一个省份。<strong>横条长度</strong>代表该省本年实际已发行金额的相对规模（最长的那条 = 发行规模最大的省份）；
-        <strong>右侧百分比</strong>是"实际发行额 ÷ 计划发行额"的完成率——数字越高说明该省发债进度越靠前。
-        完成率颜色含义：<span style="color:var(--green-700);font-weight:700">绿色（≥100%）</span> = 已完成或超额完成计划；
-        <span style="color:var(--blue-700);font-weight:700">蓝色（≥60%）</span> = 进度正常；
-        <span style="color:#E65100;font-weight:700">橙色（&lt;60%）</span> = 进度偏慢。
-        <br><strong>实用含义：</strong>完成率高的省份化债资金已基本到位，是<u>当前催款介入的优先目标</u>；完成率低的省份下半年将密集补发，是<u>未来窗口期的重点跟进对象</u>。
-      </div>`;
-    if (!entries.length) {
-      provComp.innerHTML = explanation + `<div style="text-align:center;padding:20px;color:var(--gray-400)">暂无本年发债数据</div>`;
-    } else {
-      const max = entries[0].actual;
-      provComp.innerHTML = explanation + entries.map(e => {
-        const barW = max > 0 ? Math.round(e.actual / max * 100) : 0;
-        const ratePct = (e.rate * 100).toFixed(0);
-        const regionColor = REGION_COLORS[e.region] || 'tag-blue';
-        return `
-          <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--gray-100)">
-            <div style="min-width:60px;font-size:.8rem;font-weight:600">${e.prov}</div>
-            <div style="flex:1;position:relative">
-              <div style="height:16px;background:var(--gray-100);border-radius:8px;overflow:hidden">
-                <div style="height:100%;width:${barW}%;background:linear-gradient(90deg,var(--blue-500),var(--blue-700));border-radius:8px;transition:width .4s"></div>
-              </div>
-            </div>
-            <div style="min-width:110px;font-size:.76rem;color:var(--gray-600)">
-              ${e.actual.toFixed(0)}亿 <span style="color:var(--gray-400)">/ ${e.planned.toFixed(0)}亿</span>
-            </div>
-            <div style="min-width:46px;text-align:right;font-size:.76rem;font-weight:600;color:${parseFloat(ratePct)>=100?'var(--green-700)':parseFloat(ratePct)>=60?'var(--blue-700)':'#E65100'}">${ratePct}%</div>
-          </div>`;
-      }).join('');
-    }
-    const compDate = document.getElementById('ovCompletionDate');
-    if (compDate) compDate.textContent = `${thisYear}年截至${bjDate.getUTCMonth()+1}月数据`;
-  }
 }
 
 // ─── Render Central Policies ─────────────────────────────────
@@ -628,75 +513,6 @@ function renderAllBondsTable() {
   `).join('');
 }
 
-// ─── Local Summary Grid ───────────────────────────────────────
-function buildSummaryRegionSelector() {
-  const container = document.getElementById('provinceSelectorSummary');
-  if (!container) return;
-  const allBtn = `<button class="province-chip active" onclick="filterSummaryRegion(null, this)">全部区域</button>`;
-  const regionBtns = Object.keys(LOCAL_SUMMARY_DATA).map(r =>
-    `<button class="province-chip" onclick="filterSummaryRegion('${r}', this)">${r}</button>`
-  ).join('');
-  container.innerHTML = allBtn + regionBtns;
-}
-
-function filterSummaryRegion(region, btn) {
-  state.selectedSummaryRegion = region;
-  document.querySelectorAll('#provinceSelectorSummary .province-chip').forEach(c => c.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  renderLocalSummaryGrid();
-}
-
-function renderLocalSummaryGrid() {
-  const grid = document.getElementById('localSummaryGrid');
-  if (!grid) return;
-  const toShow = state.selectedSummaryRegion
-    ? { [state.selectedSummaryRegion]: LOCAL_SUMMARY_DATA[state.selectedSummaryRegion] }
-    : LOCAL_SUMMARY_DATA;
-
-  grid.innerHTML = Object.entries(toShow).map(([region, data]) => {
-    const provinces = data.provinces.join('、');
-    const provinceCards = Object.entries(data.keyInfo).map(([prov, info]) => `
-      <div style="padding:10px 0; border-bottom:1px solid var(--gray-100)">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px">
-          <strong style="font-size:.88rem">${prov}</strong>
-          <div style="display:flex;gap:4px;flex-wrap:wrap">
-            <span class="tag ${info.selfReview ? 'tag-green' : 'tag-blue'}" style="font-size:.65rem">${info.strategy}</span>
-            ${info.selfReview ? '<span class="tag tag-special" style="font-size:.65rem">自审自发</span>' : ''}
-          </div>
-        </div>
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:6px">
-          <div class="region-stat"><div class="region-stat-label">1-5月累计</div><div class="region-stat-value">${formatAmt(info.issued)}<span>亿</span></div></div>
-          <div class="region-stat"><div class="region-stat-label">置换债</div><div class="region-stat-value">${formatAmt(info.zhhAmount)}<span>亿</span></div></div>
-          <div class="region-stat"><div class="region-stat-label">特殊/补充财力</div><div class="region-stat-value">${formatAmt(info.specAmount)}<span>亿</span></div></div>
-        </div>
-        <div class="region-next"><div class="region-next-label">📅 6月计划：${info.jun}</div></div>
-        <div style="font-size:.76rem; color:var(--gray-600); margin-top:6px; line-height:1.5">${info.note}</div>
-      </div>
-    `).join('');
-
-    return `
-      <div class="region-card">
-        <div class="region-card-header">
-          <div>
-            <div class="region-card-name">${region}</div>
-            <div class="region-card-provinces" style="margin-top:2px">${provinces}</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:.72rem;color:var(--gray-500)">1-5月累计</div>
-            <div style="font-size:1rem;font-weight:700;color:var(--blue-900)">${formatAmt(data.totalIssued1to5)}<span style="font-size:.65rem;font-weight:400;color:var(--gray-500)">亿</span></div>
-          </div>
-        </div>
-        <div class="region-card-body">
-          ${provinceCards}
-          <div style="margin-top:12px; padding:10px 12px; background:var(--blue-50); border-radius:6px; border:1px solid var(--blue-100)">
-            <div style="font-size:.72rem;font-weight:700;color:var(--blue-900);margin-bottom:4px">💡 6月窗口期行动建议</div>
-            <div style="font-size:.75rem;color:var(--gray-700);line-height:1.55">${data.windowAdvice}</div>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
 
 // ─── AI Box ──────────────────────────────────────────────────
 function renderAIBox() {
@@ -1432,8 +1248,6 @@ async function init() {
   renderLocalPolicies();
   populateBondFilters();
   onBondRegionChange();
-  buildSummaryRegionSelector();
-  renderLocalSummaryGrid();
   renderAIBox();
 }
 
