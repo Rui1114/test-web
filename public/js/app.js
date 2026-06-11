@@ -82,7 +82,8 @@ function switchLBSubPage(subPageId) {
   const p = document.getElementById(subPageId);
   if (p) { p.style.display = 'block'; p.classList.add('active'); }
   state.currentLBTab = subPageId;
-  if (subPageId === 'lb-policy-news') renderPolicyNewsPage();
+  if (subPageId === 'lb-policy-news')  renderPolicyNewsPage();
+  if (subPageId === 'lb-policy-track') renderHuaZhaiSpecial();
 }
 
 // ─── Level 3: Inner tabs within a lb-tab ────────────────────
@@ -1188,29 +1189,34 @@ function drawPie(canvasId, data, legendId) {
 }
 
 function drawHuaZhaiPies(filteredBonds) {
-  const allThisYear    = getThisYearAllBonds();
-  const allHZ          = getHuaZhaiThisYear();
+  const now = new Date();
+  const bjYear = new Date(now.getTime() + (8*60 - now.getTimezoneOffset())*60000).getUTCFullYear();
+  const lastYear = bjYear - 1;
 
-  const hzActual       = filteredBonds.reduce((s, b) => s + (b.actualAmount || 0), 0);
-  const hzPlanned      = filteredBonds.reduce((s, b) => s + (b.plannedAmount || 0), 0);
-  const typeAActual    = filteredBonds.filter(isTypeA).reduce((s, b) => s + (b.actualAmount || 0), 0);
-  const typeBActual    = filteredBonds.filter(isTypeB).reduce((s, b) => s + (b.actualAmount || 0), 0);
+  const allThisYear = getThisYearAllBonds();
+  const allHZ = getHuaZhaiThisYear();
 
-  // For Pie 1: use all this-year bonds as denominator
-  const allActual      = allThisYear.reduce((s, b) => s + (b.actualAmount || 0), 0);
-  const nonHzActual    = Math.max(0, allActual - hzActual);
+  const hzActual    = filteredBonds.reduce((s, b) => s + (b.actualAmount || 0), 0);
+  const typeAActual = filteredBonds.filter(isTypeA).reduce((s, b) => s + (b.actualAmount || 0), 0);
+  const typeBActual = filteredBonds.filter(isTypeB).reduce((s, b) => s + (b.actualAmount || 0), 0);
 
-  // Pie 1: 化债 vs 非化债
+  // Pie 1: 本年化债 vs 本年其他债券
+  const allActual   = allThisYear.reduce((s, b) => s + (b.actualAmount || 0), 0);
+  const nonHzActual = Math.max(0, allActual - allHZ.reduce((s, b) => s + (b.actualAmount || 0), 0));
   drawPie('hzPie1', [
-    { label: '化债专项债', value: hzActual || 0.001 },
+    { label: '化债专项债', value: allHZ.reduce((s,b)=>s+(b.actualAmount||0),0) || 0.001 },
     { label: '其他类债券', value: nonHzActual || 0.001 }
   ], 'hzPie1Legend');
 
-  // Pie 2: 已发 vs 未发(计划-已发)
-  const unissued = Math.max(0, hzPlanned - hzActual);
+  // Pie 2 (NEW): 本年化债实际 / 去年化债全年实际 — 同比完成率
+  const lastYearHzActual = state.bonds
+    .filter(b => parseInt((b.issueMonth||b.addedDate||'2000-01').slice(0,4),10) === lastYear && isHuaZhaiBond(b))
+    .reduce((s, b) => s + (b.actualAmount || 0), 0);
+  const thisYearHzActual = allHZ.reduce((s, b) => s + (b.actualAmount || 0), 0);
+  const remaining2 = Math.max(0, lastYearHzActual - thisYearHzActual);
   drawPie('hzPie2', [
-    { label: '已实际发行', value: hzActual || 0.001 },
-    { label: '尚未发行（计划内）', value: unissued || 0.001 }
+    { label: `${bjYear}年已发化债总额`, value: thisYearHzActual || 0.001 },
+    { label: `${lastYear}年剩余差距`, value: remaining2 || 0.001 }
   ], 'hzPie2Legend');
 
   // Pie 3: TypeA vs TypeB
@@ -1378,11 +1384,173 @@ function renderHuaZhaiPlan() {
   `;
 }
 
-// ─── 化债专项 主入口 ─────────────────────────────────────────
+// ─── 化债专项 Cabinet ──────────────────────────────────────────
 function renderHuaZhaiSpecial() {
-  populateHuaZhaiProvinceFilter();
-  renderHuaZhaiTable();
-  renderHuaZhaiPlan();
+  const overview = document.getElementById('hz-cabinet-overview');
+  const detail   = document.getElementById('hz-region-detail');
+  if (overview) overview.style.display = 'block';
+  if (detail)   detail.style.display   = 'none';
+  renderHzSummary();
+  renderHzRegionDrawers();
+}
+
+function renderHzSummary() {
+  const wrap = document.getElementById('hz-summary-wrap');
+  if (!wrap) return;
+  const now = new Date();
+  const bjYear = new Date(now.getTime() + (8*60 - now.getTimezoneOffset())*60000).getUTCFullYear();
+  const lastYear = bjYear - 1;
+  const hzBonds = getHuaZhaiThisYear();
+  const typeABonds = hzBonds.filter(isTypeA);
+  const typeBBonds = hzBonds.filter(isTypeB);
+  const totalAmt   = hzBonds.reduce((s,b)=>s+(b.actualAmount||0),0);
+  const aAmt       = typeABonds.reduce((s,b)=>s+(b.actualAmount||0),0);
+  const bAmt       = typeBBonds.reduce((s,b)=>s+(b.actualAmount||0),0);
+  const provinces  = [...new Set(hzBonds.map(b=>b.province))].length;
+  const lastYearAmt = state.bonds
+    .filter(b => parseInt((b.issueMonth||b.addedDate||'2000-01').slice(0,4),10) === lastYear && isHuaZhaiBond(b))
+    .reduce((s,b)=>s+(b.actualAmount||0),0);
+  const bjMonth = new Date(now.getTime() + (8*60 - now.getTimezoneOffset())*60000).getUTCMonth() + 1;
+
+  wrap.innerHTML = `
+    <div class="section-card" style="margin-bottom:22px">
+      <div class="section-card-header">
+        <div class="section-card-title">🎯 化债专项债券 — ${bjYear}年全国发行概况</div>
+        <span class="tag tag-special">${bjYear}年1月–${bjMonth}月</span>
+      </div>
+      <div class="section-card-body">
+        <p style="font-size:.87rem;color:var(--gray-700);line-height:1.9;margin-bottom:16px">
+          ${bjYear}年1月至${bjMonth}月，全国共发行化债专项债券 <strong>${hzBonds.length}</strong> 笔，
+          实际发行总额 <strong>${totalAmt.toFixed(0)}亿元</strong>，覆盖 <strong>${provinces}</strong> 个省份及直辖市。
+          其中<strong>特殊新增专项债（补充财力/清欠类）</strong> ${typeABonds.length} 笔，合计 <strong>${aAmt.toFixed(0)}亿元</strong>，
+          可直接用于偿付服务类欠款与化解隐性债务；
+          <strong>置换存量隐性债务再融资专项债</strong> ${typeBBonds.length} 笔，合计 <strong>${bAmt.toFixed(0)}亿元</strong>，
+          用于置换已纳入隐性债务的存量债务，债务置换完成后财政空间释放即为催款窗口。
+          ${lastYearAmt > 0
+            ? `与${lastYear}年全年化债规模（${lastYearAmt.toFixed(0)}亿元）相比，本年同比已完成 <strong>${(totalAmt/lastYearAmt*100).toFixed(1)}%</strong>。`
+            : ''}
+        </p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
+          <div class="stat-chip"><span>化债债券笔数</span><strong>${hzBonds.length} 笔</strong></div>
+          <div class="stat-chip"><span>化债总额（本年）</span><strong>${totalAmt.toFixed(0)}亿</strong></div>
+          <div class="stat-chip"><span>特殊新增专项债</span><strong>${aAmt.toFixed(0)}亿</strong></div>
+          <div class="stat-chip"><span>置换再融资专项债</span><strong>${bAmt.toFixed(0)}亿</strong></div>
+          <div class="stat-chip"><span>覆盖省份</span><strong>${provinces} 个</strong></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px">
+          <div style="text-align:center">
+            <div style="font-size:.76rem;font-weight:700;color:var(--gray-700);margin-bottom:8px">① 化债债券占本年已发行总额比例</div>
+            <div style="position:relative;width:150px;margin:0 auto"><canvas id="hzPie1" width="150" height="150"></canvas></div>
+            <div id="hzPie1Legend" style="margin-top:8px;font-size:.72rem;color:var(--gray-600);line-height:1.8"></div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:.76rem;font-weight:700;color:var(--gray-700);margin-bottom:8px">② 本年化债进度 vs 去年全年总量（同比完成率）</div>
+            <div style="position:relative;width:150px;margin:0 auto"><canvas id="hzPie2" width="150" height="150"></canvas></div>
+            <div id="hzPie2Legend" style="margin-top:8px;font-size:.72rem;color:var(--gray-600);line-height:1.8"></div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:.76rem;font-weight:700;color:var(--gray-700);margin-bottom:8px">③ 两类化债债券构成（特殊新增 vs 置换再融资）</div>
+            <div style="position:relative;width:150px;margin:0 auto"><canvas id="hzPie3" width="150" height="150"></canvas></div>
+            <div id="hzPie3Legend" style="margin-top:8px;font-size:.72rem;color:var(--gray-600);line-height:1.8"></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  drawHuaZhaiPies(hzBonds);
+}
+
+function renderHzRegionDrawers() {
+  const wrap = document.getElementById('hz-region-drawers-wrap');
+  if (!wrap) return;
+  const hzBonds = getHuaZhaiThisYear();
+  wrap.innerHTML = `
+    <div style="font-size:.88rem;font-weight:700;color:var(--gray-700);margin-bottom:14px;display:flex;align-items:center;gap:10px">
+      🗺️ 六大区域化债情况
+      <span style="font-size:.75rem;font-weight:400;color:var(--gray-500)">点击区域名称查看各省详细发行数据</span>
+    </div>
+    <div class="region-drawer-grid">
+      ${Object.entries(REGIONS).map(([region, provinces]) => {
+        const regionBonds = hzBonds.filter(b => provinces.includes(b.province));
+        const totalAmt = regionBonds.reduce((s,b)=>s+(b.actualAmount||0),0);
+        const aAmt     = regionBonds.filter(isTypeA).reduce((s,b)=>s+(b.actualAmount||0),0);
+        const bAmt     = regionBonds.filter(isTypeB).reduce((s,b)=>s+(b.actualAmount||0),0);
+        const covProv  = [...new Set(regionBonds.map(b=>b.province))].length;
+        return `
+          <div class="region-drawer-card">
+            <div class="region-drawer-header" onclick="openHzRegionDetail('${region}')">
+              <div class="region-drawer-title">
+                <span class="region-drawer-name">${region}</span>
+                <span class="region-drawer-count">${regionBonds.length} 笔 / ${totalAmt.toFixed(0)}亿</span>
+              </div>
+              <div class="region-drawer-provinces">
+                ${provinces.map(p=>`<span class="province-mini-tag">${p}</span>`).join('')}
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+                <div style="font-size:.73rem;color:var(--gray-600)">
+                  特殊新增 <strong>${aAmt.toFixed(0)}</strong>亿 &nbsp;|&nbsp; 置换再融资 <strong>${bAmt.toFixed(0)}</strong>亿
+                </div>
+                <span class="region-drawer-arrow">查看详情 →</span>
+              </div>
+            </div>
+            <div class="region-drawer-summary" style="font-size:.78rem;color:var(--gray-600)">
+              已覆盖 <strong>${covProv}</strong> 个省份，共 <strong>${regionBonds.length}</strong> 笔化债债券，
+              合计实际发行 <strong>${totalAmt.toFixed(0)}亿元</strong>
+              ${totalAmt > 0 ? `（特殊新增${(aAmt/totalAmt*100).toFixed(0)}% / 置换再融资${(bAmt/totalAmt*100).toFixed(0)}%）` : ''}
+            </div>
+          </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function openHzRegionDetail(regionName) {
+  document.getElementById('hz-cabinet-overview').style.display = 'none';
+  const detail = document.getElementById('hz-region-detail');
+  detail.style.display = 'block';
+  document.getElementById('hz-region-detail-title').textContent = regionName + ' — 化债专项债券明细';
+  const provinces = REGIONS[regionName] || [];
+  const hzBonds   = getHuaZhaiThisYear();
+  let html = '';
+  for (const province of provinces) {
+    const bonds = hzBonds.filter(b => b.province === province);
+    if (!bonds.length) continue;
+    const aAmt = bonds.filter(isTypeA).reduce((s,b)=>s+(b.actualAmount||0),0);
+    const bAmt = bonds.filter(isTypeB).reduce((s,b)=>s+(b.actualAmount||0),0);
+    html += `<div class="section-card" style="margin-bottom:14px">
+      <div class="section-card-header">
+        <div class="section-card-title">${province}</div>
+        <div style="display:flex;gap:6px">
+          <span class="tag tag-special">特殊新增 ${aAmt.toFixed(0)}亿</span>
+          <span class="tag tag-orange">置换再融资 ${bAmt.toFixed(0)}亿</span>
+        </div>
+      </div>
+      <div class="section-card-body" style="padding:0">
+        <div class="scrollable-table">
+          <table class="data-table">
+            <thead><tr><th>化债类型</th><th>债券名称</th><th>计划(亿)</th><th>实际(亿)</th><th>发行月</th><th>资金用途</th><th>链接</th></tr></thead>
+            <tbody>
+              ${bonds.map(b => `<tr>
+                <td><span class="tag ${isTypeA(b)?'tag-special':'tag-orange'}" style="font-size:.68rem">${isTypeA(b)?'特殊新增':'置换再融资'}</span></td>
+                <td style="max-width:220px;font-size:.78rem;line-height:1.4">${escHtml(b.name)}${b.batch?`<div style="font-size:.68rem;color:var(--gray-500)">${escHtml(b.batch)}</div>`:''}</td>
+                <td style="text-align:right">${(b.plannedAmount||0).toFixed(0)}</td>
+                <td style="text-align:right;font-weight:600;color:var(--blue-800)">${(b.actualAmount||0).toFixed(0)}</td>
+                <td>${escHtml(b.issueMonth||'')}</td>
+                <td style="max-width:160px;font-size:.75rem">${escHtml(b.purpose||'')}</td>
+                <td>${b.url?`<a href="${escHtml(b.url)}" target="_blank" rel="noopener" class="link-icon" style="font-size:.72rem">🔗</a>`:''}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  }
+  if (!html) html = `<div class="empty-state"><div class="empty-icon">🎯</div><div class="empty-text">${regionName}本年暂无化债专项债券记录</div></div>`;
+  document.getElementById('hz-region-detail-content').innerHTML = html;
+}
+
+function closeHzRegionDetail() {
+  document.getElementById('hz-region-detail').style.display = 'none';
+  document.getElementById('hz-cabinet-overview').style.display = 'block';
 }
 
 // ─── Init ────────────────────────────────────────────────────
