@@ -120,49 +120,19 @@
   <!-- ══════════ 政策动态 Sub-page ══════════ -->
   <div id="lb-policy-news" class="lb-subpage" style="display:none">
 
-    <div class="inner-sub-nav">
-      <button class="inner-sub-tab active" id="pnTabCentral" onclick="switchInnerTab('lb-policy-news', 'central-policy', this)">🏛️ 中央政策</button>
-      <button class="inner-sub-tab" id="pnTabLocal" onclick="switchInnerTab('lb-policy-news', 'local-policy', this)">🗺️ 地方政策</button>
+    <!-- 柜子表面：中央政策总结 + 六大区域抽屉 -->
+    <div id="policy-news-overview">
+      <div id="central-policy-summary-wrap"></div>
+      <div id="region-drawers-wrap"></div>
     </div>
 
-    <!-- ── 中央政策 ── -->
-    <div id="central-policy" class="tab-content active">
-      <div class="stats-row" id="centralPolicyStats">
-        <div class="stat-card"><div class="stat-label">中央政策发布数</div><div class="stat-value" id="cpCount">-</div><div class="stat-sub">过去两个单位年</div></div>
-        <div class="stat-card green"><div class="stat-label">2026年新增专项债额度</div><div class="stat-value">4.4<span style="font-size:.8rem">万亿</span></div><div class="stat-sub">全国合计</div></div>
-        <div class="stat-card orange"><div class="stat-label">特殊新增专项债同比增长</div><div class="stat-value">39<span style="font-size:.8rem">%</span></div><div class="stat-sub">化债力度持续加快</div></div>
-        <div class="stat-card teal"><div class="stat-label">超长期特别国债(设备更新)</div><div class="stat-value">2000<span style="font-size:.8rem">亿</span></div><div class="stat-sub">已下达92%</div></div>
-        <div class="stat-card" style="border-left-color:#7B1FA2"><div class="stat-label">新型政策性金融工具</div><div class="stat-value">8000<span style="font-size:.8rem">亿</span></div><div class="stat-sub">二季度启动</div></div>
+    <!-- 抽屉内容：点击区域后展开的省份详情 -->
+    <div id="region-detail-view" style="display:none">
+      <div class="region-detail-back">
+        <button class="btn btn-ghost btn-sm" onclick="closeRegionDetail()">← 返回政策动态</button>
+        <span id="region-detail-title-label" style="font-weight:700;color:var(--blue-900);font-size:.95rem"></span>
       </div>
-      <div class="filter-bar">
-        <div class="filter-group">
-          <span class="filter-label">政策类型:</span>
-          <select class="filter-select" id="cpTypeFilter" onchange="renderCentralPolicies()">
-            <option value="">全部类型</option>
-            <option value="管理规范">管理规范</option>
-            <option value="工作部署">工作部署</option>
-            <option value="资金安排">资金安排</option>
-            <option value="金融工具">金融工具</option>
-            <option value="改革措施">改革措施</option>
-            <option value="政策措施">政策措施</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <span class="filter-label">搜索:</span>
-          <input class="filter-input" id="cpSearch" placeholder="搜索政策名称、关键词..." oninput="renderCentralPolicies()">
-        </div>
-        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('cpSearch').value='';document.getElementById('cpTypeFilter').value='';renderCentralPolicies()">重置</button>
-      </div>
-      <div id="centralPolicyList"></div>
-    </div>
-
-    <!-- ── Inner Tab: 地方政策 ── -->
-    <div id="local-policy" class="tab-content" style="display:none">
-      <div class="filter-bar" style="flex-direction:column; align-items:flex-start;">
-        <div style="font-size:.8rem; font-weight:600; color:var(--gray-700); margin-bottom:8px;">选择区域 / 省份：</div>
-        <div class="province-selector" id="provinceSelectorLocal"></div>
-      </div>
-      <div id="localPolicyList"></div>
+      <div id="region-detail-content"></div>
     </div>
 
   </div><!-- /lb-policy-news -->

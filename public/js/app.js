@@ -34,6 +34,34 @@ const REGION_COLORS = {
   '华南': 'tag-blue', '东部': 'tag-teal',
 };
 
+// ─── Region policy summaries (drawer exteriors) ──────────────
+const REGION_SUMMARIES = {
+  '北部区域': {
+    tags: ['再融资主导', '部分自审自发'],
+    summary: '河北已纳入自审自发试点，发债节奏明显提速；吉林正式退出高风险名单后新增额度空间打开；内蒙古化债资金集中向清欠方向倾斜，专项清欠资金持续落地；辽宁特殊专项债占比超60%，清偿拖欠账款优先级高。'
+  },
+  '中部区域': {
+    tags: ['省委强力部署', '再融资主导'],
+    summary: '陕西省委专题部署"加力清理拖欠企业账款"，力争隐性债务全面清零，政策落地推进力度领先；河南补充财力类清欠台账已录入171个项目；山西以再融资为主，重点关注服务类欠款清理窗口。'
+  },
+  '西南区域': {
+    tags: ['化债力度大', '部分自审自发'],
+    summary: '四川化债力度全国最强之一，省级承担5%配套减轻市县压力；云南大规模置换债持续落地，资金到账后30–60天为最佳跟进窗口；重庆纳入自审自发扩围，再融资释放大量财政现金流。'
+  },
+  '贵州区域': {
+    tags: ['全国化债重点', '政策倾斜最强'],
+    summary: '全国化债重点省份，新增专项债主要向化债方向倾斜，补充财力类资金优先用于清偿企业欠款。建议将在贵州的欠款优先纳入全口径债务监测平台，争取下一批次资金拨付。'
+  },
+  '华南区域': {
+    tags: ['自审自发扩围', '发行规模最大'],
+    summary: '广东新增专项债全国占比最高，湖南清欠纳入省级督查激励体系，存量欠款清偿概率较高；湖北、江西相继纳入自审自发扩围，审批效率大幅提升；福建全年置换进度全国领先，华南为整体发债最活跃区域。'
+  },
+  '东部区域': {
+    tags: ['发行规模大', '建设类为主'],
+    summary: '山东发债批次密集、规模全国前列，但化债资金占比偏低，以建设类专项债为主；浙江财政实力强，债务压力相对较小，化债资金主要来源于自审自发试点的补充财力类资金。'
+  }
+};
+
 // ─── Level 1: Main page navigation ──────────────────────────
 function switchPage(pageId) {
   document.querySelectorAll('.page').forEach(p => { p.style.display = 'none'; p.classList.remove('active'); });
@@ -54,6 +82,7 @@ function switchLBSubPage(subPageId) {
   const p = document.getElementById(subPageId);
   if (p) { p.style.display = 'block'; p.classList.add('active'); }
   state.currentLBTab = subPageId;
+  if (subPageId === 'lb-policy-news') renderPolicyNewsPage();
 }
 
 // ─── Level 3: Inner tabs within a lb-tab ────────────────────
@@ -295,6 +324,126 @@ function renderLocalPolicies() {
   }
   if (!html) html = `<div class="empty-state"><div class="empty-icon">🗺️</div><div class="empty-text">请选择省份查看地方政策</div></div>`;
   list.innerHTML = html;
+}
+
+// ─── Policy News Page ────────────────────────────────────────
+function renderPolicyNewsPage() {
+  renderCentralSummary();
+  renderRegionDrawers();
+  document.getElementById('policy-news-overview').style.display = 'block';
+  document.getElementById('region-detail-view').style.display = 'none';
+}
+
+function renderCentralSummary() {
+  const wrap = document.getElementById('central-policy-summary-wrap');
+  if (!wrap) return;
+  const central = state.policies.central || [];
+  const count = central.length;
+  const typeGroups = {};
+  central.forEach(p => { typeGroups[p.type] = (typeGroups[p.type] || 0) + 1; });
+  const typeStr = Object.entries(typeGroups).map(([t, n]) => `${t}${n}项`).join('、');
+  wrap.innerHTML = `
+    <div class="section-card" style="margin-bottom:22px">
+      <div class="section-card-header">
+        <div class="section-card-title">🏛️ 中央政策概况</div>
+        <span class="tag tag-blue">${count} 条记录（过去两个单位年）</span>
+      </div>
+      <div class="section-card-body">
+        <p style="font-size:.87rem;color:var(--gray-700);line-height:1.9;margin-bottom:16px">
+          2025至2026年间，中央共出台 <strong>${count}</strong> 项化债相关政策，涵盖${typeStr}。
+          政策重点围绕三条主线推进：① 2026年全国新增专项债额度达 <strong>4.4万亿元</strong>，其中特殊新增专项债额度同比增长
+          <strong>39%</strong>，可直接用于偿付服务类欠款与化解隐性债务；
+          ② 超长期特别国债（设备更新与消费方向）2000亿元下达进度已达 <strong>92%</strong>，对接条件持续放宽；
+          ③ <strong>8000亿元</strong>新型政策性金融工具已于二季度启动，为市县化债提供低息融资支撑。
+          整体政策方向明确：以"补充财力类"专项债为核心化债工具，推动地方财政化债与清偿企业欠款并行落地。
+        </p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <div class="stat-chip"><span>新增专项债额度</span><strong>4.4万亿</strong></div>
+          <div class="stat-chip"><span>特殊新增专项债增幅</span><strong>+39%</strong></div>
+          <div class="stat-chip"><span>超长期国债（设备更新）</span><strong>2000亿</strong></div>
+          <div class="stat-chip"><span>政策性金融工具</span><strong>8000亿</strong></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderRegionDrawers() {
+  const wrap = document.getElementById('region-drawers-wrap');
+  if (!wrap) return;
+  const local = state.policies.local || {};
+  wrap.innerHTML = `
+    <div style="font-size:.88rem;font-weight:700;color:var(--gray-700);margin-bottom:14px;display:flex;align-items:center;gap:10px">
+      🗺️ 六大区域政策动态
+      <span style="font-size:.75rem;font-weight:400;color:var(--gray-500)">点击区域名称查看各省详细政策信息</span>
+    </div>
+    <div class="region-drawer-grid">
+      ${Object.entries(REGION_SUMMARIES).map(([region, data]) => {
+        const provinces = REGIONS[region] || [];
+        const count = provinces.reduce((s, p) => s + (local[p]?.length || 0), 0);
+        return `
+          <div class="region-drawer-card">
+            <div class="region-drawer-header" onclick="openRegionDetail('${region}')">
+              <div class="region-drawer-title">
+                <span class="region-drawer-name">${region}</span>
+                <span class="region-drawer-count">${count} 条政策</span>
+              </div>
+              <div class="region-drawer-provinces">
+                ${provinces.map(p => `<span class="province-mini-tag">${p}</span>`).join('')}
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+                <div style="display:flex;gap:4px;flex-wrap:wrap">
+                  ${data.tags.map(t => `<span class="tag tag-blue" style="font-size:.68rem">${t}</span>`).join('')}
+                </div>
+                <span class="region-drawer-arrow">查看详情 →</span>
+              </div>
+            </div>
+            <div class="region-drawer-summary">${data.summary}</div>
+          </div>`;
+      }).join('')}
+    </div>`;
+}
+
+function openRegionDetail(regionName) {
+  document.getElementById('policy-news-overview').style.display = 'none';
+  const detail = document.getElementById('region-detail-view');
+  detail.style.display = 'block';
+  document.getElementById('region-detail-title-label').textContent = regionName + ' — 详细政策动态';
+  const local = state.policies.local || {};
+  const provinces = REGIONS[regionName] || [];
+  let html = '';
+  for (const province of provinces) {
+    const pols = local[province] || [];
+    if (!pols.length) continue;
+    html += `<div class="section-card" style="margin-bottom:14px">
+      <div class="section-card-header">
+        <div class="section-card-title">${province}</div>
+        <span class="tag tag-teal">${pols.length} 条记录</span>
+      </div>
+      <div class="section-card-body" style="padding:12px 16px">
+        ${pols.map(p => `
+          <div class="policy-card local" style="margin-bottom:10px;border-left-color:var(--green-600)">
+            <div class="policy-card-header">
+              <div class="policy-title">${escHtml(p.title)}</div>
+              <span class="tag tag-green" style="white-space:nowrap">${escHtml(p.type)}</span>
+            </div>
+            <div class="policy-meta">
+              <span class="policy-date">📅 ${p.date}</span>
+              ${(p.bondTypes||[]).map(t=>`<span class="tag tag-special">${escHtml(t)}</span>`).join('')}
+            </div>
+            <div class="policy-summary">${escHtml(p.summary)}</div>
+            ${p.keyPoints&&p.keyPoints.length?`<ul class="key-points" style="margin-top:10px">${p.keyPoints.map(k=>`<li>${escHtml(k)}</li>`).join('')}</ul>`:''}
+            <div class="policy-footer">${p.url?`<a href="${escHtml(p.url)}" target="_blank" rel="noopener" class="link-icon">🔗 原文</a>`:''}</div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  }
+  if (!html) html = `<div class="empty-state"><div class="empty-icon">🗺️</div><div class="empty-text">${regionName}暂无收录政策记录</div></div>`;
+  document.getElementById('region-detail-content').innerHTML = html;
+}
+
+function closeRegionDetail() {
+  document.getElementById('region-detail-view').style.display = 'none';
+  document.getElementById('policy-news-overview').style.display = 'block';
 }
 
 // ─── Bond Table (近三月) ──────────────────────────────────────
@@ -1241,9 +1390,6 @@ async function init() {
   await fetchData();
   renderHeader();
   renderOverview();
-  renderCentralPolicies();
-  renderProvinceSelectorLocal();
-  renderLocalPolicies();
   populateBondFilters();
   onBondRegionChange();
   renderAIBox();
