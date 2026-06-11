@@ -298,7 +298,7 @@ body { font-family: 'Inter', 'Noto Sans SC', sans-serif; color: var(--gray-900);
 /* ─── PROGRESS BAR ───────────────────────────────────────── */
 .progress-wrap { margin: 8px 0; }
 .progress-label { display: flex; justify-content: space-between; font-size: .72rem; color: var(--gray-600); margin-bottom: 4px; }
-.progress-bar { height: 6px; background: var(--gray-200); border-radius: 3px; overflow: hidden; }
+.progress-bar { height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; }
 .progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue-700), var(--blue-500)); border-radius: 3px; transition: width .6s ease; }
 .progress-fill.green { background: linear-gradient(90deg, var(--green-800), var(--green-400)); }
 
