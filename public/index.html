@@ -72,8 +72,19 @@
         <div class="section-card-title">📊 本年各省已发行规模对比（按完成度排序）</div>
         <span class="tag tag-green" id="ovCompletionDate">截至本年迄今</span>
       </div>
-      <div class="section-card-body" id="ovProvCompletion">
-        <div style="text-align:center; padding:20px; color:var(--gray-400)"><div class="spinner"></div> 计算中...</div>
+      <div class="section-card-body">
+        <div style="padding:10px 12px; background:#FFF8E1; border-radius:6px; border:1px solid #FFD54F; margin-bottom:14px; font-size:.78rem; color:#5D4037; line-height:1.7">
+          <strong>📖 如何读懂这张图：</strong>
+          每行代表一个省份。<strong>横条长度</strong>表示该省本年实际已发行金额的相对大小（最长的那条 = 发行规模最大的省）；
+          <strong>右侧百分比</strong>是该省"实际发行额 ÷ 计划发行额"的完成率——越高说明发债进度越靠前。
+          完成率 <span style="color:var(--green-700);font-weight:700">绿色</span> 表示已达到或超过计划（≥100%），
+          <span style="color:var(--blue-700);font-weight:700">蓝色</span> 表示进度正常（≥60%），
+          <span style="color:#E65100;font-weight:700">橙色</span> 表示进度偏慢（&lt;60%）。
+          <br><strong>实用含义：</strong>完成率高的省份财政腾挪空间已释放，是当前催款介入的优先目标；完成率低的省份预计下半年还将密集发债，是未来窗口期的重点跟进对象。
+        </div>
+        <div id="ovProvCompletion">
+          <div style="text-align:center; padding:20px; color:var(--gray-400)"><div class="spinner"></div> 计算中...</div>
+        </div>
       </div>
     </div>
 
