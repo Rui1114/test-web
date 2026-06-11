@@ -408,7 +408,10 @@ function openRegionDetail(regionName) {
   document.getElementById('policy-news-overview').style.display = 'none';
   const detail = document.getElementById('region-detail-view');
   detail.style.display = 'block';
-  document.getElementById('region-detail-title-label').textContent = regionName + ' — 详细政策动态';
+  const btn = document.getElementById('pn-back-btn');
+  btn.textContent = '← 返回政策动态';
+  btn.onclick = closeRegionDetail;
+  document.getElementById('pn-breadcrumb').textContent = '化债专项资金 · 政策动态 · ' + regionName;
   const local = state.policies.local || {};
   const provinces = REGIONS[regionName] || [];
   let html = '';
@@ -445,6 +448,10 @@ function openRegionDetail(regionName) {
 function closeRegionDetail() {
   document.getElementById('region-detail-view').style.display = 'none';
   document.getElementById('policy-news-overview').style.display = 'block';
+  const btn = document.getElementById('pn-back-btn');
+  btn.textContent = '← 返回上一页';
+  btn.onclick = () => switchLBSubPage('lb-select');
+  document.getElementById('pn-breadcrumb').textContent = '化债专项资金 · 政策动态';
 }
 
 // ─── Bond Table (近三月) ──────────────────────────────────────
@@ -807,7 +814,10 @@ function openSubsidyRegionDetail(regionName) {
   document.getElementById('cs-cabinet-overview').style.display = 'none';
   const detail = document.getElementById('cs-region-detail');
   detail.style.display = 'block';
-  document.getElementById('cs-region-detail-title').textContent = regionName + ' — 政策性资金详情';
+  const btn = document.getElementById('cs-back-btn');
+  btn.textContent = '← 返回政策性资金';
+  btn.onclick = closeSubsidyRegionDetail;
+  document.getElementById('cs-breadcrumb').textContent = '政策性资金 · ' + regionName;
 
   const provinces = REGIONS[regionName] || [];
   const channels  = (subsidiesData && subsidiesData.channels) || [];
@@ -860,6 +870,10 @@ function openSubsidyRegionDetail(regionName) {
 function closeSubsidyRegionDetail() {
   document.getElementById('cs-region-detail').style.display = 'none';
   document.getElementById('cs-cabinet-overview').style.display = 'block';
+  const btn = document.getElementById('cs-back-btn');
+  btn.textContent = '← 返回首页';
+  btn.onclick = () => goToPage('landing');
+  document.getElementById('cs-breadcrumb').textContent = '政策性资金';
 }
 
 function switchSubsidyChannel(channelId, btn) {
@@ -1687,7 +1701,10 @@ function openHzRegionDetail(regionName) {
   document.getElementById('hz-cabinet-overview').style.display = 'none';
   const detail = document.getElementById('hz-region-detail');
   detail.style.display = 'block';
-  document.getElementById('hz-region-detail-title').textContent = regionName + ' — 化债专项债券明细';
+  const btn = document.getElementById('pt-back-btn');
+  btn.textContent = '← 返回债券追踪';
+  btn.onclick = closeHzRegionDetail;
+  document.getElementById('pt-breadcrumb').textContent = '化债专项资金 · 债券追踪 · ' + regionName;
   const provinces = REGIONS[regionName] || [];
   const hzBonds   = getHuaZhaiThisYear();
 
@@ -1759,6 +1776,10 @@ function openHzRegionDetail(regionName) {
 function closeHzRegionDetail() {
   document.getElementById('hz-region-detail').style.display = 'none';
   document.getElementById('hz-cabinet-overview').style.display = 'block';
+  const btn = document.getElementById('pt-back-btn');
+  btn.textContent = '← 返回上一页';
+  btn.onclick = () => switchLBSubPage('lb-select');
+  document.getElementById('pt-breadcrumb').textContent = '化债专项资金 · 债券追踪';
 }
 
 // ─── Init ────────────────────────────────────────────────────
