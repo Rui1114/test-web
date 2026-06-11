@@ -35,20 +35,15 @@ const REGION_COLORS = {
 };
 
 // ─── Level 1: Main page navigation ──────────────────────────
-function switchPage(pageId, btn) {
+function switchPage(pageId) {
   document.querySelectorAll('.page').forEach(p => { p.style.display = 'none'; p.classList.remove('active'); });
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   const page = document.getElementById(pageId);
   if (page) { page.style.display = 'block'; page.classList.add('active'); }
-  if (btn) btn.classList.add('active');
   state.currentPage = pageId;
-  const nav = document.getElementById('mainNav');
-  if (nav) nav.style.display = pageId === 'landing' ? 'none' : 'flex';
 }
 
 function goToPage(pageId) {
-  const btn = document.getElementById(pageId === 'local-bonds' ? 'navLocalBonds' : 'navCentralSubsidies');
-  switchPage(pageId, btn);
+  switchPage(pageId);
   if (pageId === 'central-subsidies') initSubsidiesPage();
 }
 
