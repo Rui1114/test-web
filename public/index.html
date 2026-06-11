@@ -79,95 +79,53 @@
      ╚═══════════════════════════════════════════════════════╝ -->
 <section id="local-bonds" class="page">
 
-  <!-- Level-2 sub-nav -->
-  <div class="sub-nav">
-    <button class="sub-tab active" onclick="switchLBTab('lb-overview', this)">📈 总览</button>
-    <button class="sub-tab" onclick="switchLBTab('lb-tracking', this)">🔍 政策追踪</button>
+  <!-- ══════════ 玄关 (Lobby) ══════════ -->
+  <div id="lb-select" class="lb-subpage active">
+    <div class="landing-wrap" style="min-height:calc(100vh - 120px)">
+      <div class="landing-header">
+        <div class="landing-header-label">化债专项资金 · 直接路径</div>
+        <h2>请选择查询方向</h2>
+        <p>政策与债券数据均来源于权威渠道，全部可追溯</p>
+      </div>
+      <div class="landing-cards">
+
+        <div class="landing-card" onclick="switchLBSubPage('lb-policy-news')">
+          <div class="landing-card-num">1</div>
+          <h2 class="landing-card-title">政策动态<small>（中央 & 地方）</small></h2>
+          <p class="landing-card-desc">查看中央最新化债政策文件，以及各省市地方政策公告与发债动态</p>
+          <div class="landing-card-wave">
+            <svg viewBox="0 0 600 72" preserveAspectRatio="none">
+              <path d="M0,36 C100,72 200,4 300,36 C400,68 500,8 600,36 L600,72 L0,72 Z" fill="rgba(255,255,255,0.14)"/>
+            </svg>
+          </div>
+          <span class="landing-card-arrow">→</span>
+        </div>
+
+        <div class="landing-card" onclick="switchLBSubPage('lb-policy-track')">
+          <div class="landing-card-num">2</div>
+          <h2 class="landing-card-title">债券追踪<small>（全类别 & 化债专项）</small></h2>
+          <p class="landing-card-desc">追踪全类别债券发行记录，深入分析化债专项债券构成、完成率与规划展望</p>
+          <div class="landing-card-wave">
+            <svg viewBox="0 0 600 72" preserveAspectRatio="none">
+              <path d="M0,36 C100,72 200,4 300,36 C400,68 500,8 600,36 L600,72 L0,72 Z" fill="rgba(255,255,255,0.14)"/>
+            </svg>
+          </div>
+          <span class="landing-card-arrow">→</span>
+        </div>
+
+      </div>
+    </div>
   </div>
 
-  <!-- ══════════ LB-TAB 1: 总览 ══════════ -->
-  <div id="lb-overview" class="lb-tab active">
-
-    <!-- Top stats (filled by renderOverview) -->
-    <div class="stats-row" id="overviewTopStats">
-      <div class="stat-card"><div class="stat-label">数据库债券总条目</div><div class="stat-value" id="ovTotalCount">-</div><div class="stat-sub">覆盖过去两个单位年</div></div>
-      <div class="stat-card green"><div class="stat-label">本年已发行总额</div><div class="stat-value" id="ovThisYearActual">-</div><div class="stat-sub" id="ovThisYearLabel">亿元</div></div>
-      <div class="stat-card orange"><div class="stat-label">前年全年发行总额</div><div class="stat-value" id="ovLastYearActual">-</div><div class="stat-sub" id="ovLastYearLabel">亿元</div></div>
-      <div class="stat-card teal"><div class="stat-label">本年业务相关新增债</div><div class="stat-value" id="ovNewBizBond">-</div><div class="stat-sub">补充财力+清欠类（亿元）</div></div>
-      <div class="stat-card" style="border-left-color:#7B1FA2"><div class="stat-label">本年置换再融资债</div><div class="stat-value" id="ovRefiZhiHuan">-</div><div class="stat-sub">置换存量隐性债务（亿元）</div></div>
-    </div>
-
-    <!-- 数据说明 -->
-    <div style="padding:10px 14px; background:#E3F2FD; border-radius:6px; border:1px solid var(--blue-100); margin-bottom:14px; font-size:.78rem; color:#0D47A1; line-height:1.8">
-      <strong>📖 数据口径说明：</strong>
-      以上所有"总额"均指<strong>实际发行额</strong>（即债券已正式发行并完成缴款的金额），而非"计划发行额"。
-      "本年"指当前自然年（2026年）1月至今的累计数据；"前年"指上一完整自然年（2025年）全年数据。
-      <strong>本年业务相关新增债</strong>特指可直接用于偿付服务类欠款或化解隐性债务的两类债券：补充财力类专项债 + 清欠类专项债（即"特殊新增专项债"，<code>isSpecial=true</code>）。
-      <strong>本年置换再融资债</strong>指再融资专项债中用途为"置换存量隐性债务"的部分。
-      <span style="color:var(--blue-700)">⚠️ 注意：本平台数据库收录范围为业务覆盖省份的重点债券，数字不代表全国或单省发行总量，仅供参考趋势和窗口期研判。</span>
-    </div>
-
-    <!-- Two-year comparison side by side -->
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px" id="ovYearCompare"></div>
-
-
-    <!-- 背景知识 -->
-    <div class="section-card">
-      <div class="section-card-header">
-        <div class="section-card-title">📚 债券化债背景知识 — 项目经理速查手册</div>
-      </div>
-      <div class="section-card-body">
-        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px; margin-bottom:16px">
-          <div style="padding:14px; background:var(--blue-50); border-radius:8px; border:1px solid var(--blue-100)">
-            <div style="font-weight:700; color:var(--blue-900); margin-bottom:8px; font-size:.9rem">🎯 补充财力类专项债（最直接，优先关注）</div>
-            <div style="font-size:.8rem; color:var(--gray-700); line-height:1.6">无需包装具体项目，直接用于偿付<strong>环卫服务类欠款</strong>、化解隐性债务、清偿政府投资项目欠款。是与服务类企业最直接相关的化债资金渠道。2026年全国特殊新增专项债额度同比增长39%，是追债的核心窗口。</div>
-          </div>
-          <div style="padding:14px; background:#FFF3E0; border-radius:8px; border:1px solid #FFCC80">
-            <div style="font-weight:700; color:#E65100; margin-bottom:8px; font-size:.9rem">📋 清欠类专项债（工程项目欠款适用）</div>
-            <div style="font-size:.8rem; color:var(--gray-700); line-height:1.6">专用于清偿"<strong>6·30清单</strong>"台账的工程类项目欠款。服务类项目需确认欠款是否录入全口径债务监测平台。适合已有书面债权证明的项目类欠款。</div>
-          </div>
-          <div style="padding:14px; background:var(--green-50); border-radius:8px; border:1px solid var(--green-100)">
-            <div style="font-weight:700; color:var(--green-800); margin-bottom:8px; font-size:.9rem">🔄 再融资专项债 — 置换存量隐性债务</div>
-            <div style="font-size:.8rem; color:var(--gray-700); line-height:1.6">原则用于置换隐性债务。地方财政通过<strong>统筹调拨</strong>可腾挪资金用于清欠。再融资债置换完成后地方隐债减少，财政空间释放，此时为催款黄金窗口。</div>
-          </div>
-          <div style="padding:14px; background:#F3E5F5; border-radius:8px; border:1px solid #CE93D8">
-            <div style="font-weight:700; color:#6A1B9A; margin-bottom:8px; font-size:.9rem">🏗️ 再融资一般债（偿还到期债为主）</div>
-            <div style="font-size:.8rem; color:var(--gray-700); line-height:1.6">用于偿还到期一般债券本金，通常不直接补充财力。但<strong>腾挪效应</strong>仍存在：一般债偿还后一般公共预算资金有结余可调剂。关注发行量大的省份。</div>
-          </div>
-          <div style="padding:14px; background:#E8F5E9; border-radius:8px; border:1px solid #A5D6A7">
-            <div style="font-weight:700; color:#2E7D32; margin-bottom:8px; font-size:.9rem">📅 债券发行节奏与催款时机</div>
-            <div style="font-size:.8rem; color:var(--gray-700); line-height:1.6">债券资金到账后约<strong>30-60天</strong>为最佳催款窗口。一季度末（3月）、二季度末（6月）为全年发债高峰期。各省债券发行后跟踪财政厅资金下达通知，可作为介入依据。</div>
-          </div>
-          <div style="padding:14px; background:#FFF8E1; border-radius:8px; border:1px solid #FFE082">
-            <div style="font-weight:700; color:#E65100; margin-bottom:8px; font-size:.9rem">💡 如何利用本平台提升回款成功率</div>
-            <div style="font-size:.8rem; color:var(--gray-700); line-height:1.6">① 在<strong>政策追踪→地方政策</strong>查找目标省市最新发债情况；② 在<strong>月季度总结→地方计划</strong>预判下一步发债安排；③ 在<strong>中央补贴</strong>找到协助政府申报的资金渠道，以申报换取欠款优先清偿承诺。</div>
-          </div>
-        </div>
-        <!-- 判断逻辑 -->
-        <div style="padding:14px; background:var(--gray-50); border-radius:8px; border:1px solid var(--gray-200)">
-          <div style="font-weight:700; color:var(--gray-800); margin-bottom:10px; font-size:.9rem">⚖️ 债券与业务相关度判断标准</div>
-          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:8px; font-size:.78rem">
-            <div style="display:flex; gap:6px; align-items:flex-start"><span style="color:var(--green-600); font-weight:700; flex-shrink:0">★★★</span><div><strong>高相关：</strong>补充财力类专项债、清欠类专项债 → 直接催款</div></div>
-            <div style="display:flex; gap:6px; align-items:flex-start"><span style="color:#FF9800; font-weight:700; flex-shrink:0">★★☆</span><div><strong>中相关：</strong>再融资置换债（置换完成后跟进）、政策性金融工具</div></div>
-            <div style="display:flex; gap:6px; align-items:flex-start"><span style="color:var(--gray-400); font-weight:700; flex-shrink:0">★☆☆</span><div><strong>低相关：</strong>收费公路、棚改等项目专项债 → 间接腾挪</div></div>
-            <div style="display:flex; gap:6px; align-items:flex-start"><span style="color:var(--gray-300); font-weight:700; flex-shrink:0">—</span><div><strong>暂不相关：</strong>再融资一般债（偿还到期债用途）</div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div><!-- /lb-overview -->
-
-  <!-- ══════════ LB-TAB 2: 政策追踪 ══════════ -->
-  <div id="lb-tracking" class="lb-tab" style="display:none">
+  <!-- ══════════ 政策动态 Sub-page ══════════ -->
+  <div id="lb-policy-news" class="lb-subpage" style="display:none">
 
     <div class="inner-sub-nav">
-      <button class="inner-sub-tab active" onclick="switchInnerTab('lb-tracking', 'central-policy', this)">🏛️ 中央政策</button>
-      <button class="inner-sub-tab" onclick="switchInnerTab('lb-tracking', 'local-policy', this)">🗺️ 地方政策</button>
-      <button class="inner-sub-tab" onclick="switchInnerTab('lb-tracking', 'all-bond-types', this); initAllBondTypes()">📋 全类别债券</button>
-      <button class="inner-sub-tab" onclick="switchInnerTab('lb-tracking', 'huazhai-special', this); renderHuaZhaiSpecial()">🎯 化债专项</button>
+      <button class="inner-sub-tab active" id="pnTabCentral" onclick="switchInnerTab('lb-policy-news', 'central-policy', this)">🏛️ 中央政策</button>
+      <button class="inner-sub-tab" id="pnTabLocal" onclick="switchInnerTab('lb-policy-news', 'local-policy', this)">🗺️ 地方政策</button>
     </div>
 
-    <!-- ── Inner Tab: 中央政策 ── -->
+    <!-- ── 中央政策 ── -->
     <div id="central-policy" class="tab-content active">
       <div class="stats-row" id="centralPolicyStats">
         <div class="stat-card"><div class="stat-label">中央政策发布数</div><div class="stat-value" id="cpCount">-</div><div class="stat-sub">过去两个单位年</div></div>
@@ -207,8 +165,18 @@
       <div id="localPolicyList"></div>
     </div>
 
-    <!-- ── Inner Tab: 全类别债券 ── -->
-    <div id="all-bond-types" class="tab-content" style="display:none">
+  </div><!-- /lb-policy-news -->
+
+  <!-- ══════════ 债券追踪 Sub-page ══════════ -->
+  <div id="lb-policy-track" class="lb-subpage" style="display:none">
+
+    <div class="inner-sub-nav">
+      <button class="inner-sub-tab active" id="ptTabBonds" onclick="switchInnerTab('lb-policy-track', 'all-bond-types', this); initAllBondTypes()">📋 全类别债券</button>
+      <button class="inner-sub-tab" id="ptTabHz" onclick="switchInnerTab('lb-policy-track', 'huazhai-special', this); renderHuaZhaiSpecial()">🎯 化债专项</button>
+    </div>
+
+    <!-- ── 全类别债券 ── -->
+    <div id="all-bond-types" class="tab-content active">
       <div class="bond-sub-nav">
         <button class="bond-sub-btn active" onclick="switchBondSubTab('bond-issuance', this); renderBondTable()">📋 近三月发债</button>
         <button class="bond-sub-btn" onclick="switchBondSubTab('all-bonds', this); populateAllBondFilters(); renderAllBondsTable()">📊 两个单位年全部记录</button>
@@ -434,8 +402,7 @@
 
     </div><!-- /huazhai-special -->
 
-  </div><!-- /lb-tracking -->
-
+  </div><!-- /lb-policy-track -->
 
 </section><!-- /local-bonds -->
 

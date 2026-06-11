@@ -11,7 +11,7 @@ const state = {
   regions: {},
   selectedLocalProvince: null,
   currentPage: 'landing',
-  currentLBTab: 'lb-overview',
+  currentLBTab: 'lb-select',
   currentInnerTabs: { 'lb-tracking': 'central-policy' }
 };
 
@@ -45,18 +45,15 @@ function switchPage(pageId) {
 function goToPage(pageId) {
   switchPage(pageId);
   if (pageId === 'central-subsidies') initSubsidiesPage();
+  if (pageId === 'local-bonds') switchLBSubPage('lb-select');
 }
 
-// ─── Level 2: Sub-tabs within 地方债券 ──────────────────────
-function switchLBTab(tabId, btn) {
-  const parent = document.getElementById('local-bonds');
-  if (!parent) return;
-  parent.querySelectorAll('.lb-tab').forEach(t => { t.style.display = 'none'; t.classList.remove('active'); });
-  parent.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
-  const tab = document.getElementById(tabId);
-  if (tab) { tab.style.display = 'block'; tab.classList.add('active'); }
-  if (btn) btn.classList.add('active');
-  state.currentLBTab = tabId;
+// ─── Level 2: Sub-pages within 地方债券 ─────────────────────
+function switchLBSubPage(subPageId) {
+  document.querySelectorAll('#local-bonds .lb-subpage').forEach(p => { p.style.display = 'none'; p.classList.remove('active'); });
+  const p = document.getElementById(subPageId);
+  if (p) { p.style.display = 'block'; p.classList.add('active'); }
+  state.currentLBTab = subPageId;
 }
 
 // ─── Level 3: Inner tabs within a lb-tab ────────────────────
@@ -71,8 +68,6 @@ function switchInnerTab(parentId, tabId, btn) {
   state.currentInnerTabs[parentId] = tabId;
 }
 
-// kept for backward compat
-function switchTab(tabId, btn) { switchInnerTab(state.currentLBTab, tabId, btn); }
 
 // ─── Fetch data ───────────────────────────────────────────────
 async function fetchData() {
