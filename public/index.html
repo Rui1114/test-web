@@ -553,6 +553,23 @@
     </div>
   </div>
 
+  <!-- 城市/地区检索栏（跨四大渠道全局搜索） -->
+  <div style="background:linear-gradient(135deg,#F3E5F5,#EDE7F6); border:1px solid #B39DDB; border-radius:10px; padding:14px 18px; margin-bottom:14px; display:flex; flex-wrap:wrap; align-items:center; gap:12px">
+    <span style="font-size:.85rem; font-weight:700; color:#6A1B9A; white-space:nowrap">🔍 按城市 / 县区检索：</span>
+    <input id="subsidyCitySearch"
+           class="filter-input"
+           placeholder="输入市、县、区名称（如：贵阳、宜宾、呼和浩特…）"
+           oninput="onSubsidyCitySearch(this.value)"
+           style="flex:1; min-width:240px; border-color:#B39DDB; background:#fff">
+    <button class="btn btn-ghost btn-sm" onclick="clearSubsidySearch()" style="white-space:nowrap">✕ 清除</button>
+    <span style="font-size:.72rem; color:#7E57C2; white-space:nowrap">搜索范围：四大渠道所有政策文件</span>
+  </div>
+
+  <!-- 搜索结果面板（有搜索词时显示，覆盖渠道详情） -->
+  <div id="subsidySearchResults" style="display:none"></div>
+
+  <!-- 渠道 tabs + 详情（无搜索词时显示） -->
+  <div id="subsidyChannelArea">
   <div class="sub-nav">
     <button class="sub-tab active" id="subTab-ultra-bond" onclick="switchSubsidyChannel('ultra-bond', this)">🏛️ 超长期特别国债</button>
     <button class="sub-tab" id="subTab-central-budget" onclick="switchSubsidyChannel('central-budget', this)">🏗️ 中央预算内投资</button>
@@ -563,6 +580,7 @@
   <div id="subsidyChannelDetail">
     <div style="text-align:center; padding:60px; color:var(--gray-400)"><div class="spinner"></div> 加载中...</div>
   </div>
+  </div><!-- /subsidyChannelArea -->
 
 </section><!-- /central-subsidies -->
 

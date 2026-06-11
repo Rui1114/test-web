@@ -824,6 +824,135 @@ async function renderSubsidyChannel(channelId) {
   `;
 }
 
+// ─── 中央补贴 全局城市/地区检索 ──────────────────────────────
+let subsidyCitySearchQuery = '';
+
+function onSubsidyCitySearch(query) {
+  subsidyCitySearchQuery = query.trim();
+  const resultsDiv = document.getElementById('subsidySearchResults');
+  const channelArea = document.getElementById('subsidyChannelArea');
+  if (!resultsDiv || !channelArea) return;
+
+  if (!subsidyCitySearchQuery) {
+    resultsDiv.style.display = 'none';
+    channelArea.style.display = 'block';
+    return;
+  }
+  channelArea.style.display = 'none';
+  resultsDiv.style.display = 'block';
+  renderSubsidyCityResults(subsidyCitySearchQuery);
+}
+
+function clearSubsidySearch() {
+  const input = document.getElementById('subsidyCitySearch');
+  if (input) input.value = '';
+  onSubsidyCitySearch('');
+}
+
+function renderSubsidyCityResults(query) {
+  const resultsDiv = document.getElementById('subsidySearchResults');
+  if (!resultsDiv || !subsidiesData) {
+    if (resultsDiv) resultsDiv.innerHTML = `<div class="empty-state"><div class="empty-icon">⏳</div><div class="empty-text">数据加载中，请稍后再试</div></div>`;
+    return;
+  }
+
+  const q = query.toLowerCase();
+  const results = [];
+
+  for (const ch of (subsidiesData.channels || [])) {
+    for (const [prov, provData] of Object.entries(ch.provinces || {})) {
+      // Old structure: entries[]{cities[]}
+      if (provData.entries) {
+        for (const e of provData.entries) {
+          const cities = e.cities || [];
+          const matchedCities = cities.filter(c => c.toLowerCase().includes(q));
+          const titleHit   = (e.title   || '').toLowerCase().includes(q);
+          const summaryHit = (e.summary || '').toLowerCase().includes(q);
+          const provHit    = prov.toLowerCase().includes(q);
+          if (matchedCities.length || titleHit || summaryHit || provHit) {
+            results.push({ channelId: ch.id, channelName: ch.name, channelIcon: ch.icon || '',
+              province: prov, region: provData.region || '', entry: e,
+              matchedCities: matchedCities.length ? matchedCities : (provHit ? [prov] : []) });
+          }
+        }
+      }
+      // New city-based structure: cities{name: entries[]}
+      if (provData.cities) {
+        for (const [cityName, cityEntries] of Object.entries(provData.cities)) {
+          const cityHit = cityName.toLowerCase().includes(q);
+          for (const e of (cityEntries || [])) {
+            const titleHit   = (e.title   || '').toLowerCase().includes(q);
+            const summaryHit = (e.summary || '').toLowerCase().includes(q);
+            const provHit    = prov.toLowerCase().includes(q);
+            if (cityHit || titleHit || summaryHit || provHit) {
+              results.push({ channelId: ch.id, channelName: ch.name, channelIcon: ch.icon || '',
+                province: prov, region: provData.region || '', entry: e,
+                matchedCities: cityHit ? [cityName] : (provHit ? [prov] : []) });
+            }
+          }
+        }
+      }
+    }
+  }
+
+  if (!results.length) {
+    resultsDiv.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-text">未找到与"<strong>${escHtml(query)}</strong>"相关的政策记录<br>
+          <span style="font-size:.75rem;color:var(--gray-400)">提示：可尝试省份名称或只输入关键词（如"宜宾"而非"宜宾市"）</span>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // Group by channel
+  const byChannel = {};
+  for (const r of results) {
+    if (!byChannel[r.channelId]) byChannel[r.channelId] = { name: r.channelName, icon: r.channelIcon, items: [] };
+    byChannel[r.channelId].items.push(r);
+  }
+
+  const CH_BORDER = { 'ultra-bond': 'var(--blue-800)', 'central-budget': 'var(--green-800)', 'policy-finance': '#6A1B9A', 'industry-subsidy': '#E65100' };
+
+  resultsDiv.innerHTML = `
+    <div style="padding:10px 14px; background:var(--green-50); border-radius:6px; border:1px solid var(--green-100); margin-bottom:14px; font-size:.8rem; color:var(--green-800)">
+      共找到 <strong>${results.length}</strong> 条与"<strong>${escHtml(query)}</strong>"相关的政策记录，来自
+      <strong>${Object.keys(byChannel).length}</strong> 个渠道
+    </div>
+    ${Object.entries(byChannel).map(([chId, chData]) => `
+      <div class="section-card" style="margin-bottom:14px; border-left:4px solid ${CH_BORDER[chId]||'var(--blue-700)'}">
+        <div class="section-card-header">
+          <div class="section-card-title">${escHtml(chData.icon)} ${escHtml(chData.name)}</div>
+          <span class="tag tag-teal">${chData.items.length} 条</span>
+        </div>
+        <div class="section-card-body">
+          ${chData.items.map(r => `
+            <div style="padding:12px 0; border-bottom:1px solid var(--gray-100)">
+              <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px; flex-wrap:wrap">
+                <span class="tag ${REGION_COLORS[r.region]||'tag-blue'}">${escHtml(r.province)}</span>
+                ${r.matchedCities.map(c => `
+                  <span class="tag" style="background:#E3F2FD;color:var(--blue-800);border:1px solid var(--blue-100);font-weight:700">
+                    📍 ${escHtml(c)}
+                  </span>`).join('')}
+                <span class="tag ${SUBSIDY_TYPE_COLORS[r.entry.type]||'tag-blue'}">${escHtml(r.entry.type||'')}</span>
+                <span style="margin-left:auto; font-size:.72rem; color:var(--gray-400); white-space:nowrap">📅 ${r.entry.date||''}</span>
+              </div>
+              <div style="font-weight:600; font-size:.86rem; color:var(--gray-900); margin-bottom:5px; line-height:1.4">${escHtml(r.entry.title||'')}</div>
+              <div style="font-size:.78rem; color:var(--gray-700); line-height:1.6; margin-bottom:7px">${escHtml(r.entry.summary||'')}</div>
+              ${r.entry.actionable ? `
+                <div style="padding:6px 10px; background:var(--green-50); border-radius:4px; border-left:3px solid var(--green-400); font-size:.75rem; color:var(--green-800)">
+                  <strong>⚡ 行动建议：</strong>${escHtml(r.entry.actionable)}
+                </div>` : ''}
+              ${r.entry.url ? `<div style="margin-top:6px"><a href="${escHtml(r.entry.url)}" target="_blank" rel="noopener" class="link-icon">🔗 查看原文</a></div>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
 function filterSubsidyProv(prov, btn) {
   subsidiesProvFilter = prov;
   document.querySelectorAll('#subsidyProvChips .province-chip').forEach(c => c.classList.remove('active'));
