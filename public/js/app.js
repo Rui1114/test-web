@@ -261,11 +261,21 @@ function renderOverview() {
       .map(([prov, d]) => ({ prov, ...d, rate: d.planned > 0 ? d.actual / d.planned : 0 }))
       .sort((a, b) => b.actual - a.actual);
 
+    const explanation = `
+      <div style="padding:10px 12px;background:#FFF8E1;border-radius:6px;border:1px solid #FFD54F;margin-bottom:14px;font-size:.78rem;color:#5D4037;line-height:1.7">
+        <strong>📖 如何读懂这张图：</strong>
+        每行代表一个省份。<strong>横条长度</strong>代表该省本年实际已发行金额的相对规模（最长的那条 = 发行规模最大的省份）；
+        <strong>右侧百分比</strong>是"实际发行额 ÷ 计划发行额"的完成率——数字越高说明该省发债进度越靠前。
+        完成率颜色含义：<span style="color:var(--green-700);font-weight:700">绿色（≥100%）</span> = 已完成或超额完成计划；
+        <span style="color:var(--blue-700);font-weight:700">蓝色（≥60%）</span> = 进度正常；
+        <span style="color:#E65100;font-weight:700">橙色（&lt;60%）</span> = 进度偏慢。
+        <br><strong>实用含义：</strong>完成率高的省份化债资金已基本到位，是<u>当前催款介入的优先目标</u>；完成率低的省份下半年将密集补发，是<u>未来窗口期的重点跟进对象</u>。
+      </div>`;
     if (!entries.length) {
-      provComp.innerHTML = `<div style="text-align:center;padding:20px;color:var(--gray-400)">暂无本年发债数据</div>`;
+      provComp.innerHTML = explanation + `<div style="text-align:center;padding:20px;color:var(--gray-400)">暂无本年发债数据</div>`;
     } else {
       const max = entries[0].actual;
-      provComp.innerHTML = entries.map(e => {
+      provComp.innerHTML = explanation + entries.map(e => {
         const barW = max > 0 ? Math.round(e.actual / max * 100) : 0;
         const ratePct = (e.rate * 100).toFixed(0);
         const regionColor = REGION_COLORS[e.region] || 'tag-blue';
