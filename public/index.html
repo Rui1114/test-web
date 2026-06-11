@@ -31,18 +31,59 @@
 </header>
 
 <!-- ═══════════════ MAIN NAV ═══════════════ -->
-<nav class="main-nav">
-  <button class="nav-tab active" onclick="switchPage('local-bonds', this)">📊 地方债券</button>
-  <button class="nav-tab" onclick="switchPage('central-subsidies', this); initSubsidiesPage()">🏦 中央补贴</button>
+<nav class="main-nav" id="mainNav" style="display:none">
+  <button class="nav-tab" onclick="switchPage('landing', null)">🏠 首页</button>
+  <button class="nav-tab" id="navLocalBonds" onclick="switchPage('local-bonds', this)">📊 地方债券</button>
+  <button class="nav-tab" id="navCentralSubsidies" onclick="switchPage('central-subsidies', this); initSubsidiesPage()">🏦 中央补贴</button>
 </nav>
 
 <!-- ═══════════════ APP BODY ═══════════════ -->
 <div class="app-body">
 
 <!-- ╔═══════════════════════════════════════════════════════╗
+     ║               PAGE 0: 着陆页                         ║
+     ╚═══════════════════════════════════════════════════════╝ -->
+<section id="landing" class="page active">
+  <div class="landing-wrap">
+    <div class="landing-header">
+      <div class="landing-header-label">政策化债追踪工作台</div>
+      <h2>请选择您的追踪目标</h2>
+      <p>选择资金路径，进入对应的政策追踪模块</p>
+    </div>
+    <div class="landing-cards">
+
+      <div class="landing-card" onclick="goToPage('local-bonds')">
+        <div class="landing-card-num">1</div>
+        <h2 class="landing-card-title">化债专项资金<small>（直接路径）</small></h2>
+        <p class="landing-card-desc">锚定"补充财力类专项债"，推动欠款纳入债务系统，争取政府发债清偿</p>
+        <div class="landing-card-wave">
+          <svg viewBox="0 0 600 72" preserveAspectRatio="none">
+            <path d="M0,36 C100,72 200,4 300,36 C400,68 500,8 600,36 L600,72 L0,72 Z" fill="rgba(255,255,255,0.14)"/>
+          </svg>
+        </div>
+        <span class="landing-card-arrow">→</span>
+      </div>
+
+      <div class="landing-card" onclick="goToPage('central-subsidies')">
+        <div class="landing-card-num">2</div>
+        <h2 class="landing-card-title">政策性资金<small>（间接路径）</small></h2>
+        <p class="landing-card-desc">申报政策资金以缓解项目现金流压力 + 协助政府申报资金以换取化债优先权</p>
+        <div class="landing-card-wave">
+          <svg viewBox="0 0 600 72" preserveAspectRatio="none">
+            <path d="M0,36 C100,72 200,4 300,36 C400,68 500,8 600,36 L600,72 L0,72 Z" fill="rgba(255,255,255,0.14)"/>
+          </svg>
+        </div>
+        <span class="landing-card-arrow">→</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ╔═══════════════════════════════════════════════════════╗
      ║               PAGE 1: 地方债券                       ║
      ╚═══════════════════════════════════════════════════════╝ -->
-<section id="local-bonds" class="page active">
+<section id="local-bonds" class="page">
 
   <!-- Level-2 sub-nav -->
   <div class="sub-nav">

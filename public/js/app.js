@@ -10,7 +10,7 @@ const state = {
   metadata: {},
   regions: {},
   selectedLocalProvince: null,
-  currentPage: 'local-bonds',
+  currentPage: 'landing',
   currentLBTab: 'lb-overview',
   currentInnerTabs: { 'lb-tracking': 'central-policy' }
 };
@@ -42,6 +42,14 @@ function switchPage(pageId, btn) {
   if (page) { page.style.display = 'block'; page.classList.add('active'); }
   if (btn) btn.classList.add('active');
   state.currentPage = pageId;
+  const nav = document.getElementById('mainNav');
+  if (nav) nav.style.display = pageId === 'landing' ? 'none' : 'flex';
+}
+
+function goToPage(pageId) {
+  const btn = document.getElementById(pageId === 'local-bonds' ? 'navLocalBonds' : 'navCentralSubsidies');
+  switchPage(pageId, btn);
+  if (pageId === 'central-subsidies') initSubsidiesPage();
 }
 
 // ─── Level 2: Sub-tabs within 地方债券 ──────────────────────
