@@ -648,10 +648,51 @@ body { font-family: 'Inter', 'Noto Sans SC', sans-serif; color: var(--gray-900);
   color: white;
   transform: translateX(4px);
 }
+/* ─── LANDING EXPLAINER ─────────────────────────────────── */
+.landing-explainer {
+  max-width: 900px; margin: 40px auto 0; padding: 0 8px 60px;
+}
+.landing-explainer-title {
+  font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--gray-400); text-align: center; margin-bottom: 28px;
+}
+.explainer-block {
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.13);
+  border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 16px;
+}
+.explainer-block-header {
+  display: flex; align-items: center; gap: 10px;
+  font-size: .88rem; font-weight: 700; color: rgba(255,255,255,.9); margin-bottom: 10px;
+}
+.explainer-num {
+  width: 22px; height: 22px; background: rgba(255,255,255,.18); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: .72rem; font-weight: 700; color: white; flex-shrink: 0;
+}
+.explainer-intro {
+  font-size: .79rem; color: rgba(255,255,255,.65); line-height: 1.75; margin: 0 0 14px;
+}
+.explainer-terms { display: flex; flex-direction: column; gap: 10px; }
+.explainer-term {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 9px 12px; background: rgba(255,255,255,.06); border-radius: 6px;
+  font-size: .78rem; line-height: 1.7;
+}
+.explainer-term-label {
+  flex-shrink: 0; min-width: 110px; font-weight: 700; color: rgba(255,255,255,.88);
+}
+.explainer-term-def { color: rgba(255,255,255,.6); }
+.explainer-term-def code {
+  background: rgba(255,255,255,.12); padding: 1px 5px; border-radius: 3px;
+  font-size: .73rem; color: rgba(255,255,255,.85); font-family: monospace;
+}
+
 @media (max-width: 768px) {
   .landing-cards { grid-template-columns: 1fr; gap: 20px; }
   .landing-wrap { padding: 32px 16px 48px; }
   .landing-header h2 { font-size: 1.2rem; }
   .landing-card { min-height: 240px; padding: 28px 24px 0; }
   .landing-card-title { font-size: 1.25rem; }
+  .explainer-term { flex-direction: column; gap: 4px; }
+  .explainer-term-label { min-width: unset; }
 }

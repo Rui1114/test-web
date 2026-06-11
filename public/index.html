@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>政策化债追踪工作台 | Policy Debt Intelligence</title>
-<link rel="stylesheet" href="css/style.css?v=20260611d">
+<link rel="stylesheet" href="css/style.css?v=20260611e">
 </head>
 <body>
 
@@ -71,6 +71,68 @@
       </div>
 
     </div>
+
+    <!-- ══ 使用说明 ══ -->
+    <div class="landing-explainer">
+
+      <div class="landing-explainer-title">使用说明 · 梳理逻辑与名词解释</div>
+
+      <!-- 化债专项资金 -->
+      <div class="explainer-block">
+        <div class="explainer-block-header">
+          <span class="explainer-num">1</span>
+          化债专项资金（直接路径）— 债券追踪口径说明
+        </div>
+        <p class="explainer-intro">本模块专门追踪两类可直接用于清偿存量欠款的专项债券，排除普通建设类债券干扰，聚焦与化债最直接相关的资金来源。</p>
+        <div class="explainer-terms">
+          <div class="explainer-term">
+            <span class="explainer-term-label">特殊新增专项债</span>
+            <span class="explainer-term-def">筛选条件：<code>isSpecial = true</code> 且 <code>type = 新增专项债</code>。即财政部专项批准的"补充财力类"或"清欠类"专项债，资金可直接拨付给债权企业用于偿还拖欠账款，是化债最直接的工具。</span>
+          </div>
+          <div class="explainer-term">
+            <span class="explainer-term-label">特殊再融资专项债</span>
+            <span class="explainer-term-def">筛选条件：<code>subtype = 置换存量隐性债务</code>。用于置换已纳入政府隐性债务台账的存量债务，置换完成后财政腾出空间即为催款窗口，通常资金到位后 30–60 天为最佳跟进时机。</span>
+          </div>
+          <div class="explainer-term">
+            <span class="explainer-term-label">同比完成率</span>
+            <span class="explainer-term-def">以上一年全年两类债券发行总额为分母，以本年截至当前发行总额为分子，反映本年发债进度相对去年全年的完成比例。超过 100% 表示本年已超过去年全年总量。</span>
+          </div>
+          <div class="explainer-term">
+            <span class="explainer-term-label">六大区域划分</span>
+            <span class="explainer-term-def">北部（京津冀辽吉蒙）、中部（豫晋陕）、西南（川滇渝）、贵州（单独）、华南（粤闽赣桂湘鄂）、东部（鲁浙）。按业务覆盖省份聚合，便于区域性化债进度横向对比。</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 政策性资金 -->
+      <div class="explainer-block">
+        <div class="explainer-block-header">
+          <span class="explainer-num">2</span>
+          政策性资金（间接路径）— 四大渠道说明
+        </div>
+        <p class="explainer-intro">本模块追踪四类中央对地方的财政支持工具。核心逻辑：协助政府成功申报 → 建立深度合作关系 → 换取政府承诺以到位资金优先清偿历史欠款。</p>
+        <div class="explainer-terms">
+          <div class="explainer-term">
+            <span class="explainer-term-label">超长期特别国债（设备更新/两新）</span>
+            <span class="explainer-term-def">非偿还性直接拨款，最高补助 15–30%，环卫车辆、污水垃圾处理设施更新属于 16 大支持领域之一；西部省份中央承担 95% 配套，申报门槛相对较低。</span>
+          </div>
+          <div class="explainer-term">
+            <span class="explainer-term-label">中央预算内投资</span>
+            <span class="explainer-term-def">国家发改委每年滚动下达，单项目最高支持 5000 万元，覆盖城镇污水垃圾处理、农村生活污水治理等方向；项目入库即意味着政府年度支出安排锁定。</span>
+          </div>
+          <div class="explainer-term">
+            <span class="explainer-term-label">新型政策性金融工具</span>
+            <span class="explainer-term-def">2026 年续发约 8000 亿元，以低息融资（约 1.5–2%）支持市县化债，不计入地方政府债务，为贵州、四川、云南等重点化债省份优先提供资金支撑。</span>
+          </div>
+          <div class="explainer-term">
+            <span class="explainer-term-label">行业专项补贴</span>
+            <span class="explainer-term-def">住建部、生态环境部、农业农村部等通过转移支付下达，覆盖餐厨垃圾资源化利用、农村垃圾收运处置、黑臭水体治理等细分方向；部分补贴直接发给运营企业，可作为独立收入来源或直接抵扣欠款。</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /landing-explainer -->
+
   </div>
 </section>
 
@@ -184,6 +246,6 @@
 </div><!-- /app-body -->
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="js/app.js?v=20260611d"></script>
+<script src="js/app.js?v=20260611e"></script>
 </body>
 </html>
