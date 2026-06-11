@@ -591,6 +591,7 @@ body { font-family: 'Inter', 'Noto Sans SC', -apple-system, sans-serif; color: v
   justify-content: center;
   min-height: calc(100vh - 62px);
   padding: 48px 28px 60px;
+  background: linear-gradient(to bottom, #ffffff 0%, var(--gray-50) 100%);
 }
 .landing-header {
   text-align: center;
@@ -694,12 +695,15 @@ body { font-family: 'Inter', 'Noto Sans SC', -apple-system, sans-serif; color: v
   transform: translateX(4px);
 }
 /* ─── LANDING EXPLAINER ─────────────────────────────────── */
+.landing-explainer-wrap {
+  background: linear-gradient(to bottom, var(--blue-800) 0%, var(--blue-900) 100%);
+}
 .landing-explainer {
-  max-width: 900px; margin: 40px auto 0; padding: 0 8px 60px;
+  max-width: 900px; margin: 0 auto; padding: 48px 28px 64px;
 }
 .landing-explainer-title {
   font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-  color: var(--gray-400); text-align: center; margin-bottom: 28px;
+  color: rgba(255,255,255,.5); text-align: center; margin-bottom: 28px;
 }
 .explainer-block {
   background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.13);
