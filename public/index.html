@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>政策化债追踪工作台 | Policy Debt Intelligence</title>
-<link rel="stylesheet" href="css/style.css?v=20260611e">
+<link rel="stylesheet" href="css/style.css?v=20260611f">
 </head>
 <body>
 
@@ -143,7 +143,11 @@
 
   <!-- ══════════ 玄关 (Lobby) ══════════ -->
   <div id="lb-select" class="lb-subpage active">
-    <div class="landing-wrap" style="min-height:calc(100vh - 120px)">
+    <div class="page-nav-bar">
+      <button class="nav-back-btn" onclick="goToPage('landing')">← 返回首页</button>
+      <span style="font-size:.8rem;color:var(--gray-400)">化债专项资金</span>
+    </div>
+    <div class="landing-wrap" style="min-height:calc(100vh - 180px)">
       <div class="landing-header">
         <div class="landing-header-label">化债专项资金 · 直接路径</div>
         <h2>请选择查询方向</h2>
@@ -181,6 +185,11 @@
 
   <!-- ══════════ 政策动态 Sub-page ══════════ -->
   <div id="lb-policy-news" class="lb-subpage" style="display:none">
+    <div class="page-nav-bar">
+      <button class="nav-back-btn" onclick="switchLBSubPage('lb-select')">← 返回上一页</button>
+      <span style="font-size:.8rem;color:var(--gray-400)">化债专项资金 · 政策动态</span>
+      <button class="nav-home-btn" onclick="goToPage('landing')">⌂ 返回首页</button>
+    </div>
 
     <!-- 柜子表面：中央政策总结 + 六大区域抽屉 -->
     <div id="policy-news-overview">
@@ -191,8 +200,9 @@
     <!-- 抽屉内容：点击区域后展开的省份详情 -->
     <div id="region-detail-view" style="display:none">
       <div class="region-detail-back">
-        <button class="btn btn-ghost btn-sm" onclick="closeRegionDetail()">← 返回政策动态</button>
-        <span id="region-detail-title-label" style="font-weight:700;color:var(--blue-900);font-size:.95rem"></span>
+        <button class="nav-back-btn" onclick="closeRegionDetail()">← 返回政策动态</button>
+        <span id="region-detail-title-label" style="font-weight:700;color:var(--gray-900);font-size:.9rem"></span>
+        <button class="nav-home-btn" onclick="goToPage('landing')">⌂ 返回首页</button>
       </div>
       <div id="region-detail-content"></div>
     </div>
@@ -201,6 +211,11 @@
 
   <!-- ══════════ 债券追踪 Sub-page ══════════ -->
   <div id="lb-policy-track" class="lb-subpage" style="display:none">
+    <div class="page-nav-bar">
+      <button class="nav-back-btn" onclick="switchLBSubPage('lb-select')">← 返回上一页</button>
+      <span style="font-size:.8rem;color:var(--gray-400)">化债专项资金 · 债券追踪</span>
+      <button class="nav-home-btn" onclick="goToPage('landing')">⌂ 返回首页</button>
+    </div>
 
     <!-- 柜子表面：全国总结 + 饼状图 -->
     <div id="hz-cabinet-overview">
@@ -211,8 +226,9 @@
     <!-- 抽屉内容：点击区域后展开的省份化债详情 -->
     <div id="hz-region-detail" style="display:none">
       <div class="region-detail-back">
-        <button class="btn btn-ghost btn-sm" onclick="closeHzRegionDetail()">← 返回债券追踪</button>
-        <span id="hz-region-detail-title" style="font-weight:700;color:var(--blue-900);font-size:.95rem"></span>
+        <button class="nav-back-btn" onclick="closeHzRegionDetail()">← 返回债券追踪</button>
+        <span id="hz-region-detail-title" style="font-weight:700;color:var(--gray-900);font-size:.9rem"></span>
+        <button class="nav-home-btn" onclick="goToPage('landing')">⌂ 返回首页</button>
       </div>
       <div id="hz-region-detail-content"></div>
     </div>
@@ -226,6 +242,11 @@
      ╚═══════════════════════════════════════════════════════╝ -->
 <section id="central-subsidies" class="page" style="display:none">
 
+  <div class="page-nav-bar">
+    <button class="nav-back-btn" onclick="goToPage('landing')">← 返回首页</button>
+    <span style="font-size:.8rem;color:var(--gray-400)">政策性资金</span>
+  </div>
+
   <!-- 柜子表面：四大渠道总结 + 六大区域抽屉 -->
   <div id="cs-cabinet-overview">
     <div id="cs-channel-summaries-wrap"></div>
@@ -235,8 +256,9 @@
   <!-- 抽屉内容：省份详情 -->
   <div id="cs-region-detail" style="display:none">
     <div class="region-detail-back">
-      <button class="btn btn-ghost btn-sm" onclick="closeSubsidyRegionDetail()">← 返回政策性资金</button>
-      <span id="cs-region-detail-title" style="font-weight:700;color:var(--blue-900);font-size:.95rem"></span>
+      <button class="nav-back-btn" onclick="closeSubsidyRegionDetail()">← 返回政策性资金</button>
+      <span id="cs-region-detail-title" style="font-weight:700;color:var(--gray-900);font-size:.9rem"></span>
+      <button class="nav-home-btn" onclick="goToPage('landing')">⌂ 返回首页</button>
     </div>
     <div id="cs-region-detail-content"></div>
   </div>
@@ -246,6 +268,6 @@
 </div><!-- /app-body -->
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="js/app.js?v=20260611e"></script>
+<script src="js/app.js?v=20260611f"></script>
 </body>
 </html>

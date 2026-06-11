@@ -1293,7 +1293,7 @@ function drawPie(canvasId, data, legendId) {
     return;
   }
 
-  const COLORS = ['#1565C0','#43A047','#E65100','#6A1B9A','#00838F','#C62828'];
+  const COLORS = ['#0071E3','#06B6D4','#0E7490','#2997FF','#34C759','#F59E0B'];
 
   _hzCharts[canvasId] = new Chart(canvas, {
     type: 'doughnut',
